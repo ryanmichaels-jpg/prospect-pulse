@@ -1,0 +1,196 @@
+# Cursor prospecting batch 1 — 20 accounts from Cursor_GTM_Brief.md
+# Real ICP-curated list. Run with: python3 -u run.py
+#
+# Tier classifications below are MY pre-judgment from the brief.
+# The model's output will tell us whether the score matches expectation.
+
+companies:
+  # ── AI infrastructure / developer tools (Tier 1 candidates) ────────────
+
+  - name: Modal Labs
+    github_org: modal-labs
+    employee_estimate: 80
+    industry: ai_infra
+    ai_native: true
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Replicate
+    github_org: replicate
+    employee_estimate: 80
+    industry: ai_infra
+    ai_native: true
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Pinecone
+    github_org: pinecone-io
+    employee_estimate: 150
+    industry: ai_infra
+    ai_native: true
+    funding_stage: series_b
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Supabase
+    github_org: supabase
+    employee_estimate: 80
+    industry: data_infra
+    ai_native: false
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Render
+    github_org: renderinc
+    employee_estimate: 100
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_c
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Railway
+    github_org: railwayapp
+    employee_estimate: 50
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_a
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Fly.io
+    github_org: superfly
+    employee_estimate: 50
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_b
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Linear
+    github_org: linear
+    employee_estimate: 80
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Vercel
+    github_org: vercel
+    employee_estimate: 600
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_e
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Mercury
+    github_org: mercury-financial
+    employee_estimate: 500
+    industry: fintech
+    ai_native: false
+    funding_stage: series_c
+    recent_series_bc: true
+    plg_signal: false
+
+  # ── Vertical SaaS with codebase complexity ─────────────────────────────
+
+  - name: Plaid
+    github_org: plaid
+    employee_estimate: 700
+    industry: fintech
+    ai_native: false
+    funding_stage: series_d
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Webflow
+    github_org: webflow
+    employee_estimate: 600
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_c
+    recent_series_bc: true
+    plg_signal: false
+
+  - name: Airtable
+    github_org: Airtable
+    employee_estimate: 700
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_f
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Retool
+    github_org: tryretool
+    employee_estimate: 500
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_c
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Sourcegraph
+    github_org: sourcegraph
+    employee_estimate: 200
+    industry: developer_tools
+    ai_native: false
+    funding_stage: series_d
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── AI-native, recent funding triggers ─────────────────────────────────
+  # NOTE: Decagon and Sierra are confirmed Cursor customers per cursor.com/customers.
+  # Keep them in for model calibration, but treat as EXPANSION plays, not new logo.
+
+  - name: Decagon
+    github_org: decagon-ai
+    ashby_org: decagon
+    employee_estimate: 150
+    industry: ai_native
+    ai_native: true
+    funding_stage: series_d
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Sierra
+    github_org: sierra-ai
+    ashby_org: sierra
+    employee_estimate: 100
+    industry: ai_native
+    ai_native: true
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Glean
+    github_org: gleanwork
+    employee_estimate: 500
+    industry: ai_native
+    ai_native: true
+    funding_stage: series_e
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Tessl
+    github_org: tessl-io
+    employee_estimate: 50
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Together AI
+    github_org: togethercomputer
+    employee_estimate: 250
+    industry: ai_infra
+    ai_native: true
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true

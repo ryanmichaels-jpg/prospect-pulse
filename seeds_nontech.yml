@@ -1,0 +1,227 @@
+# Non-tech prospecting batch — 23 companies whose primary business isn't
+# software but who have substantial public GitHub footprints. Hypothesis:
+# the model surfaces hidden Cursor prospects in this segment.
+
+companies:
+  # ── Financial services / banks ─────────────────────────────────────────
+
+  - name: Capital One
+    github_org: capitalone
+    employee_estimate: 50000
+    industry: financial_services
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Goldman Sachs
+    github_org: goldmansachs
+    employee_estimate: 45000
+    industry: financial_services
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: JPMorgan Chase
+    github_org: jpmorganchase
+    employee_estimate: 300000
+    industry: financial_services
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: American Express
+    github_org: americanexpress
+    employee_estimate: 70000
+    industry: financial_services
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Hedge funds / quant trading ────────────────────────────────────────
+
+  - name: Two Sigma
+    github_org: twosigma
+    employee_estimate: 2000
+    industry: trading_quant
+    ai_native: false
+    funding_stage: private
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Jane Street
+    github_org: janestreet
+    employee_estimate: 2500
+    industry: trading_quant
+    ai_native: false
+    funding_stage: private
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Media / publishing ─────────────────────────────────────────────────
+
+  - name: The New York Times
+    github_org: nytimes
+    employee_estimate: 5000
+    industry: media
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Bloomberg
+    github_org: bloomberg
+    employee_estimate: 20000
+    industry: media
+    ai_native: false
+    funding_stage: private
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: BBC
+    github_org: bbc
+    employee_estimate: 22000
+    industry: media
+    ai_native: false
+    funding_stage: public_sector
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: The Washington Post
+    github_org: washingtonpost
+    employee_estimate: 2500
+    industry: media
+    ai_native: false
+    funding_stage: private
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Big retail with eng teams ──────────────────────────────────────────
+
+  - name: Walmart Global Tech
+    github_org: walmartlabs
+    employee_estimate: 15000
+    industry: retail
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Target
+    github_org: target
+    employee_estimate: 4000
+    industry: retail
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Wayfair
+    github_org: wayfair
+    employee_estimate: 13000
+    industry: retail
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Home Depot
+    github_org: homedepot
+    employee_estimate: 4000
+    industry: retail
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Pharma / biotech ───────────────────────────────────────────────────
+
+  - name: Pfizer
+    github_org: pfizer
+    employee_estimate: 80000
+    industry: pharma
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Genentech
+    github_org: Genentech
+    employee_estimate: 15000
+    industry: pharma
+    ai_native: false
+    funding_stage: subsidiary
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: AstraZeneca
+    github_org: AstraZeneca
+    employee_estimate: 80000
+    industry: pharma
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Aerospace / public sector ──────────────────────────────────────────
+
+  - name: NASA
+    github_org: nasa
+    employee_estimate: 18000
+    industry: public_sector
+    ai_native: false
+    funding_stage: public_sector
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Lockheed Martin
+    github_org: lockheed-martin
+    employee_estimate: 116000
+    industry: aerospace_defense
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Telecom ────────────────────────────────────────────────────────────
+
+  - name: Verizon
+    github_org: verizon
+    employee_estimate: 105000
+    industry: telecom
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Comcast
+    github_org: Comcast
+    employee_estimate: 190000
+    industry: telecom
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  # ── Travel / hospitality ───────────────────────────────────────────────
+
+  - name: Expedia Group
+    github_org: expediagroup
+    employee_estimate: 17000
+    industry: travel
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Booking.com
+    github_org: bookingcom
+    employee_estimate: 22000
+    industry: travel
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false

@@ -64,12 +64,25 @@ AI_NATIVE_PTS = 15
 EMPLOYEE_SCALE_BUCKETS = [(50, 0), (99999, 10)]
 
 COMPLEX_INDUSTRIES = {
+    # Original
     "fintech": 10,
     "ai_infra": 10,
     "ai_native": 10,
     "developer_tools": 10,
     "data_infra": 10,
     "marketplace": 5,
+    # ⭐ NEW: non-tech-named verticals with real engineering complexity
+    "financial_services": 10,   # banks, credit cards (distinct from fintech)
+    "trading_quant": 10,        # hedge funds, prop trading
+    "pharma": 10,               # regulated, research-heavy
+    "aerospace_defense": 10,    # highly regulated codebases
+    "public_sector": 10,        # gov agencies, NASA, .gov
+    "media": 5,                 # news, broadcasting
+    "retail": 5,                # big-box retail with eng teams
+    "telecom": 5,               # carriers
+    "automotive": 5,            # OEMs with software
+    "travel": 5,                # hotels, airlines, OTAs
+    "logistics": 5,             # shipping, supply chain
 }
 
 # Tier thresholds (model max is now ~140; rebalanced for new bucket weights)

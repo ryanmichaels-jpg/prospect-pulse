@@ -1,0 +1,153 @@
+# Validation seeds — known Cursor customers with verbatim public quotes.
+# Used to verify the scoring model correctly identifies real Cursor-fit accounts.
+# Run with: python3 run.py --validation
+# Output: validation.md (with quotes embedded in the report)
+
+companies:
+  # ── COMMERCIAL SEGMENT (0-1,000 employees) — the real test ──────────────
+
+  - name: Sierra
+    github_org: sierra-ai
+    ashby_org: sierra
+    quote: "I'm really a big fan of Cursor. I've enjoyed taking something I love and has been my life's passion and seeing how this AI tool transforms how I create software."
+    quote_source: "Bret Taylor, Co-Founder & CEO, Sierra"
+    employee_estimate: 100
+    industry: ai_native
+    ai_native: true
+    expected_tier: "Tier 1 or 2"
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Decagon
+    github_org: decagon-ai
+    ashby_org: decagon
+    quote: "Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build."
+    quote_source: "Ashwin Sreenivas, Co-Founder, Decagon"
+    employee_estimate: 150
+    industry: ai_native
+    ai_native: true
+    expected_tier: "Tier 1 or 2"
+    funding_stage: series_d
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: OnePay
+    github_org: onepay
+    quote: "Cursor took the most popular IDE in the world and put it on steroids. It's exceptional at debugging issues and attributing them to precise historical code changes, has stellar writing documentation skills, and has been incredibly helpful for new joiners in helping them ramp."
+    quote_source: "Moe Matar, CTO, OnePay"
+    employee_estimate: 200
+    industry: fintech
+    ai_native: false
+    expected_tier: "Tier 1 or 2"
+    funding_stage: series_b
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Sentry
+    github_org: getsentry
+    ashby_org: sentry
+    quote: "Watching a dozen agent branches merge every day has become normal, and that freed-up velocity shows up everywhere from release cadence to bug-backlog burn-down. Cursor isn't a convenience add-on; it's a scale-multiplier for the whole org."
+    quote_source: "Cody De Arkland, Senior Director, Sentry"
+    employee_estimate: 350
+    industry: developer_tools
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: series_e
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Upwork
+    github_org: upwork
+    greenhouse_token: upwork
+    quote: "Across roles and levels, we're seeing an increase of over 25% in PR volume and over 100% in the average PR size. Together, that means we're shipping about 50% more code."
+    quote_source: "Anton Andreev, Principal Software Engineer, Upwork"
+    employee_estimate: 850
+    industry: marketplace
+    ai_native: false
+    expected_tier: "Tier 1 or 2"
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+
+  # ── BORDERLINE (around 1,000) ──────────────────────────────────────────
+
+  - name: Brex
+    github_org: brexhq
+    greenhouse_token: brex
+    quote: "More than 70% of our engineers now use Cursor, and we've seen meaningful gains in day-to-day development, faster execution on large-scale migrations, increased rate of debugging, and even faster onboarding."
+    quote_source: "James Reggio, CTO, Brex"
+    employee_estimate: 1000
+    industry: fintech
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: series_d
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Money Forward
+    github_org: moneyforward
+    quote: "Money Forward maintains complex, interconnected production systems. Cursor's context retrieval performed reliably against these codebases, which was critical for non-engineering teams interacting with production code for the first time."
+    quote_source: "Aaron Li, Staff Engineer, Money Forward (full case study at cursor.com/blog/money-forward)"
+    employee_estimate: 1500
+    industry: fintech
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+    money_forward_full_case_study: true
+
+  # ── ENTERPRISE BENCHMARK (>1,000, confirms no undershoot) ──────────────
+
+  - name: Stripe
+    github_org: stripe
+    greenhouse_token: stripe
+    quote: "Cursor quickly grew from hundreds to thousands of extremely enthusiastic Stripe employees. We spend more on R&D and software creation than any other undertaking, and there's significant economic outcomes when making that process more efficient and productive."
+    quote_source: "Patrick Collison, Co-Founder & CEO, Stripe"
+    employee_estimate: 7000
+    industry: fintech
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: late_stage
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Coinbase
+    github_org: coinbase
+    greenhouse_token: coinbase
+    quote: "By February 2025, every Coinbase engineer had utilized Cursor, which has become the preferred IDE for most of our developers. Single engineers are now refactoring, upgrading, or building new codebases in days instead of months."
+    quote_source: "Brian Armstrong, CEO, Coinbase"
+    employee_estimate: 3500
+    industry: fintech
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Rippling
+    github_org: rippling
+    greenhouse_token: rippling
+    quote: "Cursor has transformed the way our engineering teams write and ship code, with adoption growing from 150 to over 500 engineers (~60% of our org!) in just a few weeks."
+    quote_source: "Albert Strasheim, CTO, Rippling"
+    employee_estimate: 3000
+    industry: developer_tools
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: series_g
+    recent_series_bc: false
+    plg_signal: true
+
+  - name: Datadog
+    github_org: DataDog
+    greenhouse_token: datadog
+    quote: "Coding agents like Cursor have become the killer app for AI. Not only do coding agents increase the speed at which code is created, they also improve code quality."
+    quote_source: "Alexis Lê-Quôc, CTO & Co-Founder, Datadog"
+    employee_estimate: 7500
+    industry: developer_tools
+    ai_native: false
+    expected_tier: "Tier 1"
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true

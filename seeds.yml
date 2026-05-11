@@ -1,0 +1,39 @@
+# Public example seeds. Well-known dev-tools companies used to demonstrate
+# the tool. For company-specific ICP work (e.g., Cursor), override this with
+# a private config repo (pulse-config-cursor).
+
+companies:
+  - name: Modal Labs
+    github_org: modal-labs
+    greenhouse_token: modallabs
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: true
+
+  - name: Replicate
+    github_org: replicate
+    greenhouse_token: replicate
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: false
+
+  - name: Supabase
+    github_org: supabase
+    greenhouse_token: supabase
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: false
+
+  - name: Pinecone
+    github_org: pinecone-io
+    greenhouse_token: pineconesystems
+    funding_stage: series_b
+    recent_series_bc: false
+    plg_signal: false
+
+  - name: Linear
+    github_org: linear
+    greenhouse_token: linear
+    funding_stage: series_b
+    recent_series_bc: true
+    plg_signal: false

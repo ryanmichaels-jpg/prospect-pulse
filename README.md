@@ -157,6 +157,12 @@ The included `seeds.yml` is a generic example with well-known dev-tools companie
 
 `careers_scan.py` supports Greenhouse, Lever, and Ashby. If you don't know which board a company uses, leave `greenhouse_token` / `lever_slug` / `ashby_org` blank in `seeds.yml` and the scanner will try all three using `github_org` as the slug guess.
 
+### Known limitation: Workday/iCIMS enterprises under-score
+
+The careers scanner supports Greenhouse, Lever, and Ashby — used by ~70% of modern AI-native and Series B/C companies but only ~5% of Fortune 1000 enterprises. Companies on Workday (JPMorgan, Capital One, Goldman Sachs, Pfizer, Lockheed Martin, etc.) currently return zero careers data, which under-scores them by 10–20 points.
+
+For high-priority Fortune 1000 prospects, manually look up their open engineering roles count and add `eng_roles_override: <count>` to that company's entry in `seeds.yml`. Workday scraping is on the roadmap.
+
 ## Roadmap
 
 - [x] v0.1 Public infrastructure, 15-signal model, weekly cron, markdown + CSV output

@@ -167,7 +167,7 @@ The included `seeds.yml` is a generic example with well-known dev-tools companie
 
 ## Built By
 
-**Ryan Michaels.** GTM at Pave. Building the tools I wished I'd had as a rep. Targeting GTM roles at AI-native companies.
+**Ryan Michaels.** GTM at Pave. 
 
 [Email](mailto:michaelsryan34@gmail.com) · [LinkedIn](https://linkedin.com/in/ryan-michaels5/) · [GitHub](https://github.com/ryanmichaels-jpg)
 

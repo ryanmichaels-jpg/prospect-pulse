@@ -46,6 +46,7 @@ companies:
 
   - name: Sentry
     github_org: getsentry
+    npm_org: sentry         # NPM scope (@sentry) differs from GitHub org slug
     ashby_org: sentry
     quote: "Watching a dozen agent branches merge every day has become normal, and that freed-up velocity shows up everywhere from release cadence to bug-backlog burn-down. Cursor isn't a convenience add-on; it's a scale-multiplier for the whole org."
     quote_source: "Cody De Arkland, Senior Director, Sentry"

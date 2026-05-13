@@ -23,6 +23,18 @@ LANG_WEIGHTS = {1: 0, 2: 5, 3: 5, 4: 10}  # deprecated, do not extend
 TS_JS_DOMINANCE_WEAK = 5
 TS_JS_DOMINANCE_STRONG = 10
 
+# v2 new signal: NPM org footprint with corroboration ladder.
+# Per BETS.md Bet 1:
+#   none   = no public NPM scope, or fewer than 3 packages (too thin to signal a real
+#            packaging culture vs. one-off published utility)
+#   weak   = scope exists with ≥3 packages but no cross-references or DS primitives —
+#            looks like an external SDK surface, not an internal ecosystem
+#   strong = weak + at least one of: a package depends on another @<org>/* package
+#            (internal cross-reference) OR a package name matches a design-system
+#            primitive (tokens, icons, components, theme, etc.)
+NPM_ORG_WEAK = 2
+NPM_ORG_STRONG = 5
+
 # Tooling repo name patterns
 TOOLING_PATTERNS = ["sdk", "cli", "tools", "client", "infra", "lib", "kit"]
 TOOLING_PER_HIT = 3

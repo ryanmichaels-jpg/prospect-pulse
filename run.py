@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 
 from github_scan import scan_org
 from careers_scan import scan as scan_careers
+from npm_scan import scan as scan_npm
 from scorer import score
 from output import write_markdown, write_csv, write_validation_markdown
 
@@ -39,6 +40,11 @@ def main():
         github_data["name"] = c["name"]
 
         careers_data = scan_careers(c)
+
+        # NPM scope defaults to the github_org slug; override with `npm_org` in
+        # seeds.yml when the org's NPM scope differs from its GitHub slug.
+        npm_data = scan_npm(c.get("npm_org") or c["github_org"])
+
         funding_data = {
             "stage": c.get("funding_stage", "unknown"),
             "recent_series_bc": c.get("recent_series_bc", False),
@@ -48,7 +54,7 @@ def main():
             "industry": c.get("industry", ""),
         }
 
-        s = score(github_data, careers_data, funding_data)
+        s = score(github_data, careers_data, funding_data, npm_data)
         scores.append(s)
 
         if is_validation:

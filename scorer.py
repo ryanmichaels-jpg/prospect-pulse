@@ -56,8 +56,19 @@ def _bucket_score(value: float, buckets: list) -> int:
     return buckets[-1][1]
 
 
-def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyScore:
-    """Combine the three signal sources into a single CompanyScore."""
+def score(
+    github_data: dict,
+    careers_data: dict,
+    funding_data: dict,
+    npm_data: dict = None,
+) -> CompanyScore:
+    """Combine the four signal sources into a single CompanyScore.
+
+    npm_data is optional for backward compatibility — callers that haven't been
+    updated to pass an NPM scan result will simply score 0 on the NPM org signal.
+    """
+    if npm_data is None:
+        npm_data = {}
     breakdown = {}
 
     # ── Public GitHub signals ──────────────────────────────────────────
@@ -120,6 +131,7 @@ def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyS
     # potentially firing at "weak" instead of "strong".
     breakdown_v2 = {k: _strong(v) for k, v in breakdown.items()}
     breakdown_v2["ts_js_dominance"] = _score_ts_js_dominance(github_data)
+    breakdown_v2["npm_org"] = _score_npm_org(npm_data)
 
     # ── Totals and tier (over merged breakdown) ────────────────────────
     total = sum(r.points for r in breakdown_v2.values())
@@ -181,6 +193,61 @@ def _score_ts_js_dominance(github_data: dict) -> SignalResult:
 
     return SignalResult(
         points=cfg.TS_JS_DOMINANCE_WEAK,
+        level="weak",
+        evidence=evidence,
+    )
+
+
+def _score_npm_org(npm_data: dict) -> SignalResult:
+    """Score NPM org footprint with the corroboration ladder from BETS.md Bet 1.
+
+    Baseline (weak, 2 pts):
+        Public @<org> NPM scope exists with at least 3 packages. The threshold of 3
+        avoids firing on companies that published a single utility once and never
+        again — we want evidence of a packaging culture, not a one-off.
+
+    Strong (5 pts):
+        Baseline + at least one of:
+        - A package in the scope depends on another @<org>/* package
+          (real internal cross-reference, not just a published SDK surface)
+        - A package name matches a design-system primitive (tokens, icons, theme,
+          components, hooks, etc.) — single hit is enough per BETS.md.
+
+    No fire (0 pts):
+        No public NPM scope, fewer than 3 packages, or fetch failed.
+
+    The cross-referential check is what separates Stripe / Twilio / Algolia
+    (publish public SDKs that don't depend on each other) from a true monorepo
+    publisher like Sentry or Shopify (whose internal packages reference one another).
+    """
+    if not npm_data.get("npm_org_exists", False):
+        return SignalResult(points=0, level="none", evidence=[])
+
+    pkg_count = npm_data.get("npm_package_count", 0)
+    if pkg_count < 3:
+        return SignalResult(points=0, level="none", evidence=[])
+
+    evidence = [f"@{npm_data.get('npm_org_name', '?')}: {pkg_count} packages"]
+
+    cross_ref_pairs = npm_data.get("npm_cross_referential_pairs", [])
+    ds_packages = npm_data.get("npm_design_system_packages", [])
+
+    if cross_ref_pairs:
+        pair = cross_ref_pairs[0]
+        # `pair` is (from_pkg, to_pkg) — render compactly.
+        evidence.append(f"cross-ref: {pair[0]} depends on {pair[1]}")
+    if ds_packages:
+        evidence.append(f"DS primitives: {', '.join(ds_packages[:2])}")
+
+    if cross_ref_pairs or ds_packages:
+        return SignalResult(
+            points=cfg.NPM_ORG_STRONG,
+            level="strong",
+            evidence=evidence,
+        )
+
+    return SignalResult(
+        points=cfg.NPM_ORG_WEAK,
         level="weak",
         evidence=evidence,
     )

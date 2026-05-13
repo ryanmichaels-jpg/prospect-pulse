@@ -44,10 +44,15 @@ prospect-pulse pulls the signal, scores it against a customer-anchored model, an
             └────────┬────────┘    tier + per-account rationale with evidence fragments
                      │
                      ▼
+            ┌─────────────────┐
+            │   routing.py    │  ← maps fired counter-bets to a named outbound motion
+            └────────┬────────┘    (split_pitch_jvm, individual_evaluator, ...) with pitch + seats
+                     │
+                     ▼
         ┌────────────┴────────────┐
         ▼                         ▼
   prospects/YYYY-MM-DD.md   prospects/YYYY-MM-DD.csv
-  (digest)                  (CRM/spreadsheet import)
+  (digest with route pitch) (CRM import — includes route column)
 ```
 
 ## Scoring model (v2)
@@ -99,6 +104,12 @@ The corroboration evidence — a specific repo name, a `package.json` framework,
 | Tier 3 | 30–54 | Mixed signal. Needs manual research before outbound. |
 | Tier 4 | < 30 | Insufficient signal across dimensions |
 | DQ | net negative | Disqualified by stack-shape evidence even if positives fire |
+
+### Routing pass
+
+Scoring answers "how good a fit?" Routing answers "how should we approach it?" After scoring, `routing.determine_route()` examines which signals fired and emits a named outbound motion — `split_pitch_jvm`, `split_pitch_infra`, `individual_evaluator`, `public_underestimates_internal`, or `standard_outbound` (default) — each carrying a 1-2 sentence pitch the SDR uses as opener and explicit `target_seats` / `avoid_seats` lists. First-match-wins priority order; `sub_ten_team` overrides everything. See [`BETS.md` § Routing pass](BETS.md#routing-pass) for the catalog and priority order.
+
+The point: a flat counter-bet penalty answers "how much worse." A route answers "what specifically to do instead." Both attach to the per-account output — the route's pitch renders inline in the markdown rationale; the route name is a CSV column for CRM filtering.
 
 ## Validation
 
@@ -200,8 +211,9 @@ The careers scanner supports Greenhouse, Lever, and Ashby — used by ~70% of mo
 - [x] v1 validation: 8/11 Cursor customers Tier 1 or 2
 - [x] **v2: stack-shape rubric** — corroboration model (`SignalResult`), TS/JS dominance signal, NPM org footprint signal, JVM-backend disqualifier, AI-native reweight (15 → 5), per-account evidence fragments
 - [x] v2 validation: 8/11 holds; same accuracy, sharper discrimination
-- [x] **JVM/infra contrast seed set** — exercises the JVM disqualifier across Databricks, Confluent, Palantir, Elastic, Snowflake, MongoDB; first observed firings, plus minimum-active-languages gate added to fix sparse-footprint false positives
-- [ ] v2 polish remaining: bundle-composition extractor (`__NEXT_DATA__`/`_next/static/chunks` regex), pure-infra-shop and sub-ten-team disqualifiers, expanded careers keyword list (TS/React/Next.js/Turborepo/design system)
+- [x] **JVM/infra contrast seed set** — exercises the JVM disqualifier across Databricks, Confluent, Palantir, Elastic, Snowflake, MongoDB; first observed firings of the disqualifier on real companies
+- [x] **Routing pass** (`routing.py`) — five named outbound motions, first-match-wins ordering; converts each counter-bet outcome into an operational instruction (target/avoid seats + pitch)
+- [ ] v2 polish remaining: bundle-composition extractor (`__NEXT_DATA__`/`_next/static/chunks` regex), pure-infra-shop and sub-ten-team disqualifiers (each with its own contrast set), expanded careers keyword list (TS/React/Next.js/Turborepo/design system)
 - [ ] v3: headless-browser bundle detection, mobile-app-architecture signal (React Native vs native), dev-doc SDK coverage signal, LLM disambiguation for borderline cases
 - [ ] Workday/iCIMS scraping (enterprise careers coverage)
 

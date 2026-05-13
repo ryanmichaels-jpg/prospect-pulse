@@ -6,7 +6,7 @@ By Q3 2026, "do they use AI" becomes a binary every B2B SaaS company scores yes 
 
 ## How I tested it
 
-I built **prospect-pulse**, a public-signal ICP scorer that ranks accounts on artifacts an SDR can actually verify (GitHub language stats by repo count, `package.json` framework markers, NPM org cross-referentiality, careers-page keywords, hire velocity). v1 used the obvious rubric — flat-bucket scoring with `ai_native` as the largest single weight (15 pts) and language polyglot rewarded equally to TS dominance. v2 swaps in two stack-shape signals (TS/JS dominance + NPM org footprint, both corroboration-gated), introduces three disqualifiers (JVM-backend dominance, pure-infra-shop, sub-10 team), and reweights `ai_native` from 15 → 5. Every weight traces back to an evidence ledger ([`BETS.md`](BETS.md)).
+I built **prospect-pulse**, a public-signal ICP scorer that ranks accounts on artifacts an SDR can actually verify (GitHub language stats by repo count, `package.json` framework markers, NPM org cross-referentiality, careers-page keywords, hire velocity). v1 used the obvious rubric — flat-bucket scoring with `ai_native` as the largest single weight (15 pts) and language polyglot rewarded equally to TS dominance. v2 swaps in two stack-shape signals (TS/JS dominance + NPM org footprint, both corroboration-gated), reweights `ai_native` from 15 → 5, and ships the JVM-backend disqualifier (with pure-infra-shop and sub-ten-team disqualifiers designed in [`BETS.md`](BETS.md) and ready to activate). Every weight traces back to an evidence ledger.
 
 **Validation gate:** no published Cursor customer drops below Tier 2 under v2. I re-scored the 11-customer set from Cursor's own case studies (Datadog, Sentry, Stripe, Brex, Coinbase, Money Forward, Sierra, Decagon, Rippling, Upwork, OnePay). v1 passed 8/11. v2 also passes 8/11 — same headline accuracy, sharper discrimination inside the cohort ([`validation.md`](validation.md)).
 
@@ -55,14 +55,12 @@ This is the right limit to be transparent about. The rubric scores what it can s
 
 ## What I'd build next
 
-The scan, the contrast set, and the routing pass together cover the day-of-the-rep workflow. The remaining work is closing two gaps:
+The scan, the contrast set, and the routing pass already cover the day-of-the-rep workflow — the routing pass is what turns each counter-bet outcome into a named outbound motion with explicit target/avoid seats, so the digest doesn't stop at "Databricks lost 6 points" but adds "→ lead with the frontend platform team, cite `@databricks/design-system`, avoid the JVM service-ownership team." Two gaps remain.
 
-The first is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out (repos); this closes the loop with outside-in.
+The first is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out from repos; this closes the loop with outside-in.
 
 The second is shipping the remaining two disqualifiers (pure-infra-shop and sub-ten-team) with their own contrast sets — the same exercise that produced the JVM finding above. Once those land, the routing pass auto-activates the `split_pitch_infra` and `individual_evaluator` routes that are already wired up but dormant today.
 
-The routing pass itself (`routing.py`) is the operationalization of the contrast finding above. Each fired counter-bet maps to a named outbound motion with explicit target/avoid seats and a one-paragraph pitch, so the digest doesn't just say "Databricks lost 6 points for JVM dominance" — it says "Databricks → `split_pitch_jvm` → lead with the frontend platform team, cite `@databricks/design-system` in the opener, avoid the JVM service-ownership team." That's the difference between a score and a sales motion.
-
 ---
 
-Repo and full methodology: [`prospect-pulse`](README.md). Run is `python3 -u run.py --validation` for the customer pass and `python3 -u run.py` (with `seeds_aitech.yml` copied to `seeds.yml`) for the 20-account scan above. Every score in this document is reproducible from the public artifacts cited in the per-account rationale, and every weight maps to a bet in [`BETS.md`](BETS.md).
+Repo and full methodology: [`prospect-pulse`](README.md). `python3 -u run.py --validation` reproduces the customer pass; `python3 -u run.py` runs the active seeds file. Every score in this document is reproducible from the public artifacts cited in the per-account rationale, and every weight maps to a bet in [`BETS.md`](BETS.md).

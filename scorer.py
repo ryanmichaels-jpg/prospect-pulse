@@ -73,8 +73,9 @@ def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyS
     else:
         breakdown["repo_count"] = cfg.REPO_COUNT_WEIGHTS["large"][2]
 
-    langs = github_data.get("unique_languages", 0)
-    breakdown["language_diversity"] = cfg.LANG_WEIGHTS.get(langs, cfg.LANG_WEIGHTS[4] if langs >= 4 else 0)
+    # v1's language_diversity is RETIRED in v2 — see STACK_FIT_RUBRIC.md "Problem 2"
+    # and BETS.md Bet 2. The replacement (ts_js_dominance) is computed below as a v2
+    # corroboration-gated signal and merged into the breakdown after the wrap step.
 
     tooling = github_data.get("tooling_repo_count", 0)
     breakdown["tooling_signal"] = min(tooling * cfg.TOOLING_PER_HIT, cfg.TOOLING_CAP)
@@ -113,18 +114,22 @@ def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyS
     industry = (funding_data.get("industry") or "").lower()
     breakdown["industry_complexity"] = cfg.COMPLEX_INDUSTRIES.get(industry, 0)
 
-    # ── Totals ─────────────────────────────────────────────────────────
-    # breakdown is still Dict[str, int] at this point — totals and rationale
-    # both work over the raw int values exactly as in v1.
-    total = sum(breakdown.values())
-    tier = _tier_for(total)
-    rationale = _build_rationale(breakdown, github_data, careers_data, funding_data)
-
-    # Wrap v1 flat-bucket scores as SignalResult for the v2 evidence-aware output.
-    # Until corroboration-gated signals (Phase 3) start populating evidence, every
-    # signal renders as "strong" with no evidence fragments — by design, so the
-    # validation re-run produces byte-identical scores to v1.
+    # ── Wrap v1 ints + merge v2 corroboration-gated signals ───────────
+    # v1 signals get wrapped as flat-bucket SignalResult (level="strong" if non-zero).
+    # v2 signals are computed as real SignalResults carrying evidence fragments and
+    # potentially firing at "weak" instead of "strong".
     breakdown_v2 = {k: _strong(v) for k, v in breakdown.items()}
+    breakdown_v2["ts_js_dominance"] = _score_ts_js_dominance(github_data)
+
+    # ── Totals and tier (over merged breakdown) ────────────────────────
+    total = sum(r.points for r in breakdown_v2.values())
+    tier = _tier_for(total)
+
+    # ── Rationale ─────────────────────────────────────────────────────
+    # _build_rationale reads the v1 int dict (still Dict[str, int]) for v1 signals.
+    # v2 signal evidence is appended after.
+    rationale = _build_rationale(breakdown, github_data, careers_data, funding_data)
+    rationale = _append_v2_evidence(rationale, breakdown_v2)
 
     return CompanyScore(
         name=github_data.get("name", "unknown"),
@@ -134,6 +139,71 @@ def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyS
         tier=tier,
         raw={"github": github_data, "careers": careers_data, "funding": funding_data},
     )
+
+
+def _score_ts_js_dominance(github_data: dict) -> SignalResult:
+    """Score TS/JS dominance with the corroboration ladder from BETS.md Bet 2.
+
+    Baseline (weak, 5 pts):
+        TypeScript or JavaScript appears in the top 3 languages by repo count
+        across non-fork, non-archived repos pushed in the last 24 months.
+
+    Strong (10 pts):
+        Baseline + at least one repo's package.json references a server-side
+        framework (Next.js, Remix, Hono, Express, Fastify, tRPC) — confirming
+        the org is doing full-stack web development, not just frontend or
+        client-library work.
+
+    No fire (0 pts):
+        TS/JS not in the top 3 active languages.
+
+    Evidence fragments rendered into the per-account rationale always include
+    the actual top-3 language breakdown so the SDR can verify the call.
+    """
+    if not github_data.get("ts_js_dominant_top3", False):
+        return SignalResult(points=0, level="none", evidence=[])
+
+    evidence = []
+    top_langs = github_data.get("top_languages_by_count", [])[:3]
+    if top_langs:
+        formatted = ", ".join(f"{lang} ({count})" for lang, count in top_langs)
+        evidence.append(f"top 3 active langs: {formatted}")
+
+    server_evidence = github_data.get("server_framework_evidence", [])
+    if server_evidence:
+        # Trim to first 2 fragments so a single noisy repo doesn't dominate the rationale.
+        evidence.extend(server_evidence[:2])
+        return SignalResult(
+            points=cfg.TS_JS_DOMINANCE_STRONG,
+            level="strong",
+            evidence=evidence,
+        )
+
+    return SignalResult(
+        points=cfg.TS_JS_DOMINANCE_WEAK,
+        level="weak",
+        evidence=evidence,
+    )
+
+
+def _append_v2_evidence(rationale: str, breakdown_v2: dict) -> str:
+    """Append v2 SignalResult evidence to a v1-built rationale string.
+
+    v1 signals don't carry evidence (they all wrap as level='strong' with empty list),
+    so this only renders fragments from signals that actually populated evidence —
+    i.e., the v2 corroboration-gated signals.
+    """
+    v2_fragments = []
+    for name, result in breakdown_v2.items():
+        if result.points == 0 or not result.evidence:
+            continue
+        v2_fragments.append(
+            f"{result.level} {name} [{' · '.join(result.evidence)}]"
+        )
+    if not v2_fragments:
+        return rationale
+    base = rationale.rstrip(".")
+    return f"{base}; v2 signals — {'; '.join(v2_fragments)}."
 
 
 def _tier_for(total: int) -> str:

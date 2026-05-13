@@ -1,8 +1,57 @@
 """Scan a GitHub organization and return signals for scoring."""
+import json
 import os
+from collections import Counter
 from datetime import datetime, timezone, timedelta
 from github import Github, Auth, GithubException
 from config import TOOLING_PATTERNS, MIGRATION_KEYWORDS
+
+# Server-side frameworks that, when found in package.json, corroborate the
+# "full-stack web development" inference for TS/JS-dominant orgs.
+# See BETS.md, Bet 2 (top-3-languages signal) for the rationale.
+SERVER_FRAMEWORK_DEPS = {
+    "next": "Next.js",
+    "remix": "Remix",
+    "@remix-run/node": "Remix",
+    "@remix-run/server-runtime": "Remix",
+    "hono": "Hono",
+    "express": "Express",
+    "fastify": "Fastify",
+    "@trpc/server": "tRPC",
+    "trpc": "tRPC",
+}
+
+
+def _check_server_frameworks(repos):
+    """Inspect package.json on up to 5 top JS/TS repos for server-framework deps.
+
+    Returns a list of short evidence fragments like 'repo-name: Next.js dependency'.
+    Empty list means no corroboration found.
+
+    This is the "strong" corroboration for Bet 2 — see BETS.md.
+    """
+    js_ts_repos = sorted(
+        [r for r in repos if r.language in ("TypeScript", "JavaScript")],
+        key=lambda r: r.stargazers_count,
+        reverse=True,
+    )[:5]
+
+    evidence = []
+    for repo in js_ts_repos:
+        try:
+            content_file = repo.get_contents("package.json")
+            content = content_file.decoded_content.decode("utf-8")
+            data = json.loads(content)
+            deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
+            for dep_name, framework_label in SERVER_FRAMEWORK_DEPS.items():
+                if dep_name in deps:
+                    evidence.append(f"{repo.name}: {framework_label} in package.json")
+                    break  # one framework per repo is enough; move on
+        except (GithubException, json.JSONDecodeError, UnicodeDecodeError, KeyError):
+            # Repo has no package.json, has malformed JSON, or content is unreachable.
+            # Move on; absence is not negative evidence — corroboration is opportunistic.
+            continue
+    return evidence
 
 
 def scan_org(org_name: str, token: str = None) -> dict:
@@ -33,8 +82,9 @@ def scan_org(org_name: str, token: str = None) -> dict:
         return {"name": org_name, "repo_count": 0, "error": "Empty org"}
 
     cutoff_90d = datetime.now(timezone.utc) - timedelta(days=90)
+    cutoff_24mo = datetime.now(timezone.utc) - timedelta(days=730)
 
-    # Basic aggregates
+    # v1 aggregates (over ALL repos, kept unchanged for v1-flat-bucket signals)
     languages = set()
     tooling_count = 0
     migration_count = 0
@@ -43,12 +93,20 @@ def scan_org(org_name: str, token: str = None) -> dict:
     oldest_year = 0
     contributors = set()
 
+    # v2 aggregates (over an ACTIVE subset — non-fork, non-archived, pushed in last 24 months)
+    # per BETS.md Bet 2: this strips the noise GitHub language stats accumulate from
+    # vendored code, abandoned repos, and unmaintained forks.
+    active_language_counts = Counter()
+    active_repos = []
+
     # Top 5 repos by stars for deep scans (contributors + commit velocity)
     repos_sorted = sorted(repos, key=lambda r: r.stargazers_count, reverse=True)
     deep_scan = repos_sorted[:5]
 
     for repo in repos:
-        # Languages
+        # ── v1 aggregates (all repos) ─────────────────────────────────────────
+
+        # Languages (unique set, used by v1 language_diversity — kept for backward compat)
         if repo.language:
             languages.add(repo.language)
 
@@ -57,7 +115,7 @@ def scan_org(org_name: str, token: str = None) -> dict:
         if any(p in name_lower for p in TOOLING_PATTERNS):
             tooling_count += 1
 
-        # ⭐ NEW: Migration keyword detection (name + description)
+        # Migration keyword detection (name + description)
         desc = (repo.description or "").lower()
         text = f"{name_lower} {desc}"
         for kw in MIGRATION_KEYWORDS:
@@ -67,14 +125,27 @@ def scan_org(org_name: str, token: str = None) -> dict:
                     migration_examples.append(f"{repo.name}: '{kw}'")
                 break  # one match per repo
 
-        # Recency
-        if repo.pushed_at and repo.pushed_at.replace(tzinfo=timezone.utc) > cutoff_90d:
+        # Recency (90d)
+        pushed_utc = repo.pushed_at.replace(tzinfo=timezone.utc) if repo.pushed_at else None
+        if pushed_utc and pushed_utc > cutoff_90d:
             recent_pushes += 1
 
         # Age
         if repo.created_at:
             age = (datetime.now(timezone.utc) - repo.created_at.replace(tzinfo=timezone.utc)).days / 365
             oldest_year = max(oldest_year, age)
+
+        # ── v2 active-subset filter ───────────────────────────────────────────
+        # Per BETS.md Bet 2: non-fork, non-archived, pushed in last 24 months.
+        if (
+            not repo.fork
+            and not repo.archived
+            and pushed_utc
+            and pushed_utc > cutoff_24mo
+        ):
+            active_repos.append(repo)
+            if repo.language:
+                active_language_counts[repo.language] += 1
 
     # Contributors from top-5 repos
     for repo in deep_scan:
@@ -84,7 +155,7 @@ def scan_org(org_name: str, token: str = None) -> dict:
         except GithubException:
             continue
 
-    # ⭐ NEW: Commit velocity from top-5 repos, 90-day lookback
+    # Commit velocity from top-5 repos, 90-day lookback
     commit_velocities = []
     for repo in deep_scan:
         try:
@@ -95,6 +166,17 @@ def scan_org(org_name: str, token: str = None) -> dict:
         except GithubException:
             commit_velocities.append(0)
     avg_velocity = round(sum(commit_velocities) / len(commit_velocities), 1) if commit_velocities else 0
+
+    # ── v2 derived signals (over active subset) ──────────────────────────────
+    # Top 3 languages by repo count among active (non-fork, non-archived, last 24mo) repos.
+    top_languages_by_count = active_language_counts.most_common(5)
+    top_3_langs = {lang for lang, _ in active_language_counts.most_common(3)}
+    ts_js_dominant_top3 = bool(top_3_langs & {"TypeScript", "JavaScript"})
+    # Per BETS.md Bet 2 strong-corroboration: TS outranking JS suggests deliberate adoption.
+    ts_outranks_js = active_language_counts.get("TypeScript", 0) > active_language_counts.get("JavaScript", 0)
+
+    # Server-framework corroboration via package.json scan on top 5 JS/TS active repos.
+    server_framework_evidence = _check_server_frameworks(active_repos)
 
     return {
         "name": org_name,
@@ -108,6 +190,12 @@ def scan_org(org_name: str, token: str = None) -> dict:
         "oldest_repo_years": round(oldest_year, 1),
         "avg_commits_per_week": avg_velocity,
         "top_languages": sorted(languages)[:5],
+        # ── v2 fields ────────────────────────────────────────────────────────
+        "active_repo_count": len(active_repos),
+        "top_languages_by_count": top_languages_by_count,
+        "ts_js_dominant_top3": ts_js_dominant_top3,
+        "ts_outranks_js": ts_outranks_js,
+        "server_framework_evidence": server_framework_evidence,
     }
 
 

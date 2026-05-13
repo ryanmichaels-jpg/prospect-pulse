@@ -8,8 +8,20 @@ REPO_COUNT_WEIGHTS = {
     "large": (169, 99999, 10),   # 169+ = 10 pts (above customer p75)
 }
 
-# Language diversity
-LANG_WEIGHTS = {1: 0, 2: 5, 3: 5, 4: 10}
+# Language diversity — RETIRED in v2.
+# v1 awarded points for having many unique languages, which inverts what we want:
+# polyglot JVM stacks scored identically to consolidated TS monorepos. See
+# STACK_FIT_RUBRIC.md "Problem 2" for the analysis. Kept here only to avoid a
+# breaking import elsewhere; scorer.py no longer references it.
+LANG_WEIGHTS = {1: 0, 2: 5, 3: 5, 4: 10}  # deprecated, do not extend
+
+# v2 replacement: TS/JS dominance with corroboration ladder.
+# Per BETS.md Bet 2:
+#   weak   = TS or JS in top 3 languages by repo count (active repos only)
+#   strong = weak + at least one repo's package.json references a server framework
+#            (Next.js, Remix, Hono, Express, Fastify, tRPC)
+TS_JS_DOMINANCE_WEAK = 5
+TS_JS_DOMINANCE_STRONG = 10
 
 # Tooling repo name patterns
 TOOLING_PATTERNS = ["sdk", "cli", "tools", "client", "infra", "lib", "kit"]

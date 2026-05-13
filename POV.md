@@ -35,6 +35,18 @@ This is the case the v1 rubric structurally couldn't see, because every weight t
 
 **Linear and Airtable (Tier 2, +10 each).** The mirror-image failure mode. Both are modern-web archetypes — TS-dominant, with cross-referential NPM scopes (`@linear/sdk` depends on `@linear/codegen-doc`; `@airtable/blocks` depends on `@airtable/eslint-plugin-blocks`) — that v1 systematically underscored because they don't carry the `ai_native` flag. v2 lifts them ten points each on stack-shape signals alone. Neither crosses 85 to hit Tier 1, but the directional move corrects a real v1 bias toward AI-as-marketing-flag over AI-as-buyer.
 
+## The disqualifier proves its negative — and reveals split-pitch targets
+
+A rubric with disqualifiers needs disqualifiers that fire on real companies. I scored a six-company contrast set of known JVM / data-infra enterprises (Databricks, Confluent, Palantir, Elastic, Snowflake, MongoDB) to exercise the JVM-backend disqualifier. It fired on four of six. The interesting finding wasn't that it fired — it was what fired alongside it.
+
+| Company | JVM disqualifier | NPM org signal | Net tier |
+|---|---|---|---|
+| **Databricks** | strong (−6) — Scala in top 3, JD refs `consul`, `envoy` | strong (+5) — `@databricks/design-system` (design-system primitive) | Tier 1 (93) |
+| **Palantir** | strong (−6) — Java in top 3, JD refs `consul`, `envoy` | strong (+5) — `@palantir/pack.state.foundry` → `@palantir/pack.auth` | Tier 1 (86) |
+| **Confluent** | weak (−3) — Java in top 3 | strong (+5) — `@confluentinc/schemaregistry` → `@confluentinc/kafka-javascript` | Tier 2 (81) |
+
+These companies fire the JVM disqualifier and the stack-shape positive signals simultaneously. The operational read isn't "skip them" — it's that they're **split-pitch** accounts. The right Cursor entry isn't the JVM service-ownership team; it's the frontend platform team building `@databricks/design-system`, `@palantir/foundry-*`, and `@confluentinc/kafka-javascript`. A v1-style "AI-native plus scale" rubric sees Databricks as a no. v2 sees a Tier 1 with a specific carve-out: outbound the frontend team where the design-system work is publicly happening.
+
 ## What v2 still can't see
 
 A non-trivial share of Cursor's published customer base shows up weakly on public signal because their TS/React work lives in private repos. Brex demotes T1 → T2 under v2 (score 77) because their public footprint is `grpc-java`-heavy, even though James Reggio's quoted statement — "more than 70% of our engineers now use Cursor… faster execution on large-scale migrations, increased rate of debugging, faster onboarding" — implies heavy internal TS/React frontend adoption. Same shape: Money Forward (Tier 2, public Ruby-dominant), Rippling (Tier 3, 11 public repos), OnePay (Tier 4, no public footprint). The honest operational answer isn't "deprioritize" — it's "pursue with a frontend-platform-led pitch, because the public footprint underestimates the internal stack." That tradeoff is documented in the per-account rationale, so a rep using this tool doesn't get a false negative without the asterisk.
@@ -43,13 +55,11 @@ This is the right limit to be transparent about. The rubric scores what it can s
 
 ## What I'd build next
 
-The 20-account scan is half the rubric. The other half is what an SDR does with it on Monday morning. Three priorities:
+The scan and the contrast set together are half the rubric. The other half is what an SDR does with it on Monday morning. Two priorities:
 
-The first is a contrast set — 5-10 JVM-heavy or pure-infra companies (Databricks, Confluent, Snowflake, Palantir) — to give the disqualifiers real surface area instead of validating only on confirmed-good customers. A signal that fires on every test case isn't a signal.
+The first is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out (repos); this closes the loop with outside-in. The same exercise needs to happen for the other two designed-but-uncoded disqualifiers (pure-infra-shop and sub-ten-team) — each needs its own contrast set before it ships, on the same logic that produced the JVM finding above.
 
-The second is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out (repos); this closes the loop with outside-in.
-
-The third — and the one most directly tied to outbound velocity — is the rationale-to-talking-point layer. The scorer already preserves one short evidence fragment per signal that fires at "strong" (a specific repo name, a `package.json` framework, an NPM dependency edge). Today those fragments live in the digest's rationale paragraph. The next move is surfacing them as the rep's opening line in a sequence: "noticed `@replicate/types-rest-api` depends on `@replicate/types-openapi`, suggests you're investing in the package-publishing infrastructure that's where Cursor compounds — wanted to ask how the frontend team is using it today." That's the actual product: not the score, but the SDR's first sentence.
+The second — and the one most directly tied to outbound velocity — is the rationale-to-talking-point layer. The scorer already preserves one short evidence fragment per signal that fires at "strong" (a specific repo name, a `package.json` framework, an NPM dependency edge). Today those fragments live in the digest's rationale paragraph. The next move is surfacing them as the rep's opening line in a sequence: "noticed `@replicate/types-rest-api` depends on `@replicate/types-openapi`, suggests you're investing in the package-publishing infrastructure that's where Cursor compounds — wanted to ask how the frontend team is using it today." That's the actual product: not the score, but the SDR's first sentence.
 
 ---
 

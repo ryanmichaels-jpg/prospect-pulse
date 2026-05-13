@@ -1,0 +1,95 @@
+# JVM / data-infra contrast set
+#
+# Purpose: exercise the JVM-backend disqualifier (Counter-Bet 1 in BETS.md),
+# which has not fired in any validation or prospect-set scan to date. A
+# disqualifier that never fires isn't a credible disqualifier.
+#
+# The set mixes companies expected to fire the disqualifier strongly
+# (Databricks, Confluent, Palantir, Elastic — known JVM-dominant) with
+# ambiguity cases where the public footprint may not be JVM-heavy even though
+# the product reputation suggests it (Snowflake, MongoDB). The ambiguity cases
+# test whether the rubric correctly distinguishes "JVM language" from "Java
+# language used somewhere in the org."
+#
+# Run with: cp seeds_contrast.yml seeds.yml && python3 -u run.py
+# (And restore your working seeds.yml afterward.)
+
+companies:
+  # ── Expected: strong JVM disqualifier fire ──────────────────────────────
+
+  - name: Databricks
+    github_org: databricks
+    employee_estimate: 7000
+    industry: data_infra
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+    # Predicted: Scala dominant (Spark heritage), service-oriented Delta Lake
+    # architecture. Expect strong JVM fire (-6) plus likely service-mesh keyword
+    # corroboration. Strong positive signals on tooling and recency should keep
+    # this around Tier 2 despite the demotion.
+
+  - name: Confluent
+    github_org: confluentinc
+    employee_estimate: 3500
+    industry: data_infra
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+    # Predicted: Java/Scala Kafka dominance. Service-mesh and grpc near-certain
+    # in repos. Expect strong JVM fire (-6). Tier 2 / Tier 3.
+
+  - name: Palantir
+    github_org: palantir
+    employee_estimate: 4500
+    industry: aerospace_defense
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+    # Predicted: Java-dominant public footprint (Plottable etc. are TS but the
+    # core is Java). Service-architecture corroboration likely from JDs.
+    # Expect strong JVM fire (-6). Tier 2 / Tier 3.
+
+  - name: Elastic
+    github_org: elastic
+    employee_estimate: 3000
+    industry: data_infra
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+    # Predicted: Elasticsearch is Java-dominant. Top-3 JVM near-certain. Service
+    # architecture corroboration possible. Expect weak-to-strong JVM fire.
+    # Tier 2 / Tier 3.
+
+  # ── Ambiguity tests: should the disqualifier fire here? ─────────────────
+
+  - name: Snowflake
+    github_org: snowflakedb
+    employee_estimate: 7000
+    industry: data_infra
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: false
+    # Predicted: Snowflake's engine is proprietary C++. Public repos are mostly
+    # Python/Go/Java client SDKs. JVM may NOT be in top 3 — this tests whether
+    # the rubric correctly distinguishes "Java is the product language" from
+    # "Java is one of many client SDK languages." If JVM fires here, calibration
+    # is wrong.
+
+  - name: MongoDB
+    github_org: mongodb
+    employee_estimate: 5000
+    industry: data_infra
+    ai_native: false
+    funding_stage: public
+    recent_series_bc: false
+    plg_signal: true
+    # Predicted: C++ core, broad client SDK surface (Java, JS, Python, Go, Ruby,
+    # Rust). JVM should NOT dominate top-3 — likely C++ or TypeScript leads.
+    # Tests false-positive avoidance. If the rubric demotes MongoDB on JVM
+    # signal alone, the language-stats logic is too eager.

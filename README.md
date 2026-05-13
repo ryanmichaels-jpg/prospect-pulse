@@ -200,7 +200,8 @@ The careers scanner supports Greenhouse, Lever, and Ashby — used by ~70% of mo
 - [x] v1 validation: 8/11 Cursor customers Tier 1 or 2
 - [x] **v2: stack-shape rubric** — corroboration model (`SignalResult`), TS/JS dominance signal, NPM org footprint signal, JVM-backend disqualifier, AI-native reweight (15 → 5), per-account evidence fragments
 - [x] v2 validation: 8/11 holds; same accuracy, sharper discrimination
-- [ ] v2 polish: bundle-composition extractor (`__NEXT_DATA__`/`_next/static/chunks` regex), pure-infra-shop and sub-ten-team disqualifiers, expanded careers keyword list (TS/React/Next.js/Turborepo/design system), JVM/infra contrast seed set
+- [x] **JVM/infra contrast seed set** — exercises the JVM disqualifier across Databricks, Confluent, Palantir, Elastic, Snowflake, MongoDB; first observed firings, plus minimum-active-languages gate added to fix sparse-footprint false positives
+- [ ] v2 polish remaining: bundle-composition extractor (`__NEXT_DATA__`/`_next/static/chunks` regex), pure-infra-shop and sub-ten-team disqualifiers, expanded careers keyword list (TS/React/Next.js/Turborepo/design system)
 - [ ] v3: headless-browser bundle detection, mobile-app-architecture signal (React Native vs native), dev-doc SDK coverage signal, LLM disambiguation for borderline cases
 - [ ] Workday/iCIMS scraping (enterprise careers coverage)
 

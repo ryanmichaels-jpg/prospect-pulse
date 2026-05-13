@@ -141,9 +141,12 @@ COMPLEX_INDUSTRIES = {
     "logistics": 5,             # shipping, supply chain
 }
 
-# Tier thresholds (model max is now ~140; rebalanced for new bucket weights)
+# Tier thresholds. Anchored to the v2 customer distribution.
+# Tier 3 floor lowered from 35 (v1) to 30 (v2) per STACK_FIT_RUBRIC.md table —
+# the slight floor change absorbs borderline companies that pick up a single
+# disqualifier hit without being structurally wrong.
 TIERS = {
     "Tier 1": 85,
     "Tier 2": 55,
-    "Tier 3": 35,
+    "Tier 3": 30,
 }

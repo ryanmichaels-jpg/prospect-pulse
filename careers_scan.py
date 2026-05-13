@@ -1,13 +1,24 @@
 """Scan a company's careers page for engineering hiring signals.
 
-Supports Greenhouse, Lever, and Ashby JSON APIs (no scraping needed).
+Supports Greenhouse, Lever, Ashby (JSON APIs) and Y Combinator's
+Work-at-a-Startup (server-rendered meta tag).
 
 Priority order:
-  1. If explicit greenhouse_token / lever_slug / ashby_org is set in seeds.yml,
-     use that and stop.
-  2. Otherwise, auto-detect: try all three boards using github_org as the slug,
-     return the first one with real data.
+  1. Explicit ATS slug — greenhouse_token / lever_slug / ashby_org in seeds.yml.
+  2. Work-at-a-Startup if yc_slug is set in seeds.yml.
+  3. Auto-detect: try Greenhouse/Lever/Ashby with github_org as the slug.
+
+Work-at-a-Startup notes: the company page (workatastartup.com/companies/<slug>)
+is a JS-rendered SPA — the jobs list and full descriptions load client-side, so
+a plain HTTP fetch returns only the server-rendered <head>. We parse the
+<meta name="description"> tag for the "X is hiring for N jobs" pattern, which
+gives us a reliable role count. Keyword extraction from full JDs is NOT
+possible from this source; the keyword corroboration layer (platform-engineer,
+service-mesh, etc.) stays dark for WaaS-sourced companies. That's a documented
+limit, not a bug — closing it requires scraping each company's own /careers
+page, which is a separate bet.
 """
+import re
 import requests
 from config import CAREERS_KEYWORDS, SERVICE_ARCHITECTURE_KEYWORDS
 
@@ -15,6 +26,18 @@ from config import CAREERS_KEYWORDS, SERVICE_ARCHITECTURE_KEYWORDS
 GREENHOUSE_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
 LEVER_URL = "https://api.lever.co/v0/postings/{company}?mode=json"
 ASHBY_URL = "https://api.ashbyhq.com/posting-api/job-board/{org}?includeCompensation=true"
+WAAS_COMPANY_URL = "https://www.workatastartup.com/companies/{slug}"
+
+# Server-rendered meta tag pattern.
+#
+# WaaS meta descriptions follow the form '<Company> is hiring for N jobs. <One-liner>'
+# both in <meta name="description"> and <meta property="og:description">. The
+# phrase 'is hiring for N jobs' is unique to YC's company-page renderer, so
+# matching it directly (without the meta-tag wrapper) is both reliable and
+# false-positive-free. Earlier attempts that anchored the regex to the full
+# <meta ... > wrapper failed to match against the real HTML (attribute order
+# and escaping varies); the simpler pattern works against every YC W25 page.
+WAAS_JOBS_RE = re.compile(r"is hiring for (\d+) jobs?", re.IGNORECASE)
 
 
 def scan_greenhouse(board_token: str) -> dict:
@@ -60,6 +83,41 @@ def scan_ashby(org_slug: str) -> dict:
             "department": j.get("department", ""),
         })
     return _analyze_jobs(normalized, source="ashby")
+
+
+def scan_workatastartup(yc_slug: str) -> dict:
+    """Scan Y Combinator's Work-at-a-Startup company page for role count.
+
+    Parses the server-rendered <meta name="description"> for the 'is hiring for
+    N jobs' pattern. Full JD text is JS-rendered and unavailable from a plain
+    HTTP fetch, so keyword extraction stays empty for this source.
+
+    For YC seed-stage companies, treating total job count as eng-role count is
+    a reasonable approximation — the modal YC W25 job is 'Founding Engineer.'
+    Edge cases (a company mostly hiring sales/ops) will overstate the eng count
+    by a few; this is acceptable noise at the cohort level.
+    """
+    try:
+        r = requests.get(WAAS_COMPANY_URL.format(slug=yc_slug), timeout=10)
+        r.raise_for_status()
+    except Exception as e:
+        return _empty_result("workatastartup", error=str(e))
+
+    m = WAAS_JOBS_RE.search(r.text)
+    if not m:
+        return _empty_result("workatastartup", error="'is hiring for N jobs' pattern not found")
+    role_count = int(m.group(1))
+    return {
+        "source": "workatastartup",
+        "open_engineering_roles": role_count,
+        "platform_keyword_matches": 0,
+        "matched_keywords": [],
+        "service_arch_keyword_matches": 0,
+        "matched_service_arch_keywords": [],
+        # Note for the rationale: this signal carries role count only, no
+        # keyword corroboration. JVM-disqualifier escalation to strong needs
+        # JD text that WaaS doesn't expose. Documented in module docstring.
+    }
 
 
 def _analyze_jobs(jobs, source: str) -> dict:
@@ -121,7 +179,7 @@ def _has_data(result: dict) -> bool:
 def scan(company_config: dict) -> dict:
     """Dispatch to careers sources with explicit-config-first, then auto-detect."""
 
-    # Layer 1: Explicit configuration takes priority
+    # Layer 1: Explicit ATS slug takes priority
     if company_config.get("greenhouse_token"):
         return scan_greenhouse(company_config["greenhouse_token"])
     if company_config.get("lever_slug"):
@@ -129,7 +187,14 @@ def scan(company_config: dict) -> dict:
     if company_config.get("ashby_org"):
         return scan_ashby(company_config["ashby_org"])
 
-    # Layer 2: Auto-detect using github_org as a slug guess
+    # Layer 2: Work-at-a-Startup if yc_slug is set (covers YC seed-stage cohort
+    # where Greenhouse/Lever/Ashby adoption hasn't happened yet).
+    if company_config.get("yc_slug"):
+        result = scan_workatastartup(company_config["yc_slug"])
+        if _has_data(result):
+            return result
+
+    # Layer 3: Auto-detect using github_org as a slug guess
     github_org = company_config.get("github_org", "")
     if not github_org:
         return _empty_result()
@@ -147,7 +212,7 @@ def scan(company_config: dict) -> dict:
     empty = _empty_result()
     empty["note"] = (
         "Auto-detect found no careers data for any board. "
-        "Add explicit greenhouse_token / lever_slug / ashby_org to seeds.yml."
+        "Add explicit greenhouse_token / lever_slug / ashby_org / yc_slug to seeds.yml."
     )
     return empty
 

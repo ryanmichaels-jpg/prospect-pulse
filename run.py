@@ -1,8 +1,9 @@
 """Main entry point. Loads seeds, scans each company, scores, writes output.
 
 Modes:
-  python3 run.py                    # Normal prospect scan from seeds.yml
-  python3 run.py --validation       # Validation scan from validation-seeds.yml
+  python3 run.py                            # Normal prospect scan from seeds.yml
+  python3 run.py --validation               # Validation scan from validation-seeds.yml
+  python3 run.py --seeds <path>             # Arbitrary seeds file (e.g. seeds_yc.yml)
 """
 import sys
 import yaml
@@ -17,11 +18,26 @@ from scorer import score
 from output import write_markdown, write_csv, write_validation_markdown
 
 
+def _resolve_seeds_path(argv):
+    """Pick the seeds file based on CLI flags.
+
+    Priority: --validation overrides everything else; --seeds <path> picks an
+    arbitrary file; absent both, fall back to seeds.yml.
+    """
+    if "--validation" in argv:
+        return Path("validation-seeds.yml"), True
+    if "--seeds" in argv:
+        idx = argv.index("--seeds")
+        if idx + 1 >= len(argv):
+            raise SystemExit("--seeds requires a path argument: --seeds <path>")
+        return Path(argv[idx + 1]), False
+    return Path("seeds.yml"), False
+
+
 def main():
     load_dotenv()
 
-    is_validation = "--validation" in sys.argv
-    seeds_path = Path("validation-seeds.yml" if is_validation else "seeds.yml")
+    seeds_path, is_validation = _resolve_seeds_path(sys.argv)
 
     if not seeds_path.exists():
         raise FileNotFoundError(f"{seeds_path} not found")
@@ -78,10 +94,20 @@ def main():
         write_csv(scores, Path(f"validation-{today}.csv"))
         print(f"\nDone. View validation results in validation.md")
     else:
-        write_markdown(scores, Path(f"prospects/{today}.md"))
-        write_csv(scores, Path(f"prospects/{today}.csv"))
+        # When --seeds is used, suffix the output with the seeds file basename so
+        # multiple scans on the same date don't overwrite each other. The default
+        # seeds.yml keeps the unsuffixed filename for backward compat.
+        if seeds_path.name == "seeds.yml":
+            stem = today
+        else:
+            # seeds_yc.yml -> "yc", seeds_aitech.yml -> "aitech"
+            suffix = seeds_path.stem.removeprefix("seeds_") or seeds_path.stem
+            stem = f"{today}-{suffix}"
+
+        write_markdown(scores, Path(f"prospects/{stem}.md"))
+        write_csv(scores, Path(f"prospects/{stem}.csv"))
         write_markdown(scores, Path("prospects/latest.md"))
-        print(f"\nDone. View results in prospects/{today}.md")
+        print(f"\nDone. View results in prospects/{stem}.md")
 
 
 if __name__ == "__main__":

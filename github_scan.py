@@ -163,7 +163,10 @@ def scan_org(org_name: str, token: str = None) -> dict:
         try:
             for c in repo.get_contributors()[:20]:
                 contributors.add(c.login)
-        except GithubException:
+        except (GithubException, IndexError):
+            # IndexError: PyGithub's PaginatedList raises this when slicing a
+            # zero-element result (e.g. empty repo, brand-new YC company with
+            # no commit history). Observed on Quantstruct in the W25 scan.
             continue
 
     # Commit velocity from top-5 repos, 90-day lookback
@@ -174,7 +177,8 @@ def scan_org(org_name: str, token: str = None) -> dict:
             count = commits.totalCount
             weekly = count / (90 / 7)
             commit_velocities.append(weekly)
-        except GithubException:
+        except (GithubException, IndexError):
+            # Same PaginatedList failure mode as contributors — defensive catch.
             commit_velocities.append(0)
     avg_velocity = round(sum(commit_velocities) / len(commit_velocities), 1) if commit_velocities else 0
 

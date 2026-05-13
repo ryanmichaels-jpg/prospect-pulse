@@ -1,0 +1,421 @@
+# YC W25 batch — companies with public GitHub orgs
+#
+# Source: YC_W25_test.xlsx, scraped from YC's batch directory
+# Used by prospect-pulse to demonstrate the rubric against a fresh,
+# heterogeneous, audience-relevant cohort. All companies are YC seed-stage
+# (2-10 engineers typical), so employee_estimate defaults to 5 and
+# funding_stage to 'seed'. ai_native defaults to true (every entry is
+# AI-themed). Industry is inferred from the one-liner — see classify() in
+# the build script if you need to re-classify.
+#
+# Run with: python3 -u run.py --seeds seeds_yc.yml
+
+companies:
+  # AI Powered CAD
+  - name: "Adam"
+    github_org: Adam-CAD
+    yc_slug: adam
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://adam.new/
+
+  # We build networks of AI personas that simulate stakeholder opinions
+  - name: "Artificial Societies"
+    github_org: artificial-societies
+    yc_slug: artificial-societies
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://societies.io
+
+  # Open Source React.js Library for AI Chat
+  - name: "assistant-ui"
+    github_org: assistant-ui
+    yc_slug: assistant-ui
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://assistant-ui.com
+
+  # AI Browser Workforce for Operations Teams
+  - name: "Asteroid"
+    github_org: asteroidai
+    yc_slug: asteroid
+    npm_org: asteroid              # verify: https://www.npmjs.com/~asteroid
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://asteroid.ai
+
+  # AI that understands construction blueprints
+  - name: "Bild AI"
+    github_org: bild-ai
+    yc_slug: bild-ai
+    npm_org: bild              # verify: https://www.npmjs.com/~bild
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.bild.ai
+
+  # Discovering new pesticides with AI
+  - name: "Bindwell"
+    github_org: Bindwell
+    yc_slug: bindwell
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.bindwell.ai/
+
+  # Stablecoin API for global payments
+  - name: "BlindPay"
+    github_org: blindpaylabs
+    yc_slug: blindpay
+    npm_org: blindpay              # verify: https://www.npmjs.com/~blindpay
+    employee_estimate: 5
+    industry: fintech
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://blindpay.com/
+
+  # Leading open-source web agent project with 50k stars in 3 months
+  - name: "Browser Use"
+    github_org: browser-use
+    yc_slug: browser-use
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://browser-use.com
+
+  # Embedded Sandboxes for Agents
+  - name: "Butter"
+    github_org: butter-dot-dev
+    yc_slug: butter
+    npm_org: butter              # verify: https://www.npmjs.com/~butter
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://butter.dev
+
+  # AI Accountant for Accounting Firms
+  - name: "Cifrato"
+    github_org: cifrato
+    yc_slug: cifrato
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://cifrato.ai
+
+  # The LLM Eval and Observability Platform for AI Quality
+  - name: "Confident AI"
+    github_org: confident-ai
+    yc_slug: confident-ai
+    npm_org: deepeval              # verify: https://www.npmjs.com/~deepeval
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://confident-ai.com
+
+  # Integration Layer for AI Agents
+  - name: "Corsair"
+    github_org: corsairdev
+    yc_slug: corsair
+    npm_org: corsair              # verify: https://www.npmjs.com/~corsair
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.corsair.dev
+
+  # AI Analyst for Electricity Markets
+  - name: "Dartboard Energy"
+    github_org: dartboardenergy
+    yc_slug: dartboard-energy
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://dartboardenergy.com
+
+  # The AI Voice agents for hotels
+  - name: "Flowtel"
+    github_org: flowtel
+    yc_slug: flowtel
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://flowtel.ai
+
+  # Voice AI agents to automate call centers (digital call center workers)
+  - name: "Leaping AI"
+    github_org: leaping-ai
+    yc_slug: leaping-ai
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.leapingai.com
+
+  # AI Agent Training via Simulations
+  - name: "Lucidic AI"
+    github_org: lucidic-ai
+    yc_slug: lucidic-ai
+    npm_org: lucidic              # verify: https://www.npmjs.com/~lucidic
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://lucidic.ai
+
+  # The Javascript framework for building AI agents, from the Gatsby devs
+  - name: "Mastra"
+    github_org: mastra-ai
+    yc_slug: mastra
+    npm_org: mastra              # verify: https://www.npmjs.com/~mastra
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://mastra.ai
+
+  # Building the open source smart glasses operating system.
+  - name: "Mentra"
+    github_org: Mentra-Community
+    yc_slug: mentra
+    npm_org: mentra              # verify: https://www.npmjs.com/~mentra
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://mentra.glass
+
+  # Cursor for Designers
+  - name: "Onlook"
+    github_org: onlook-dev
+    yc_slug: onlook
+    npm_org: onlook              # verify: https://www.npmjs.com/~onlook
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://onlook.com/
+
+  # Navigate any set of data - no matter how large - in minutes.
+  - name: "Overstand Labs"
+    github_org: overstand-labs
+    yc_slug: overstand-labs
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://overstandlabs.com
+
+  # Real-time AI Voice Translation for Developers
+  - name: "Pinch"
+    github_org: pinch-eng
+    yc_slug: pinch
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://startpinch.com
+
+  # An AI teammate that automatically updates your customer-facing docs
+  - name: "Promptless"
+    github_org: promptless
+    yc_slug: promptless
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://promptless.ai/
+
+  # AI documentation engineer – test & autoimprove stale product docs
+  - name: "Quantstruct"
+    github_org: Quantstruct
+    yc_slug: quantstruct
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://quantstruct.com
+
+  # We turn complex API integrations into drop‑in full‑stack libraries 
+  - name: "ReJot"
+    github_org: rejot-dev
+    yc_slug: rejot
+    npm_org: rejot              # verify: https://www.npmjs.com/~rejot
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://rejot.dev
+
+  # Automating refurbishment of $1T in consumer electronics
+  - name: "Revise Robotics"
+    github_org: revise-robotics
+    yc_slug: revise-robotics
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.reviserobotics.com/
+
+  # Test, monitor, and improve your voice agents
+  - name: "Roark"
+    github_org: roarkhq
+    yc_slug: roark
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://roark.ai
+
+  # The AI Maximalist Software Holding Company
+  - name: "Rocketable"
+    github_org: Rocketable
+    yc_slug: rocketable
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.rocketable.com
+
+  # Zero code network tracer
+  - name: "Subtrace"
+    github_org: subtrace
+    yc_slug: subtrace
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://subtrace.dev
+
+  # AI that fixes enterprise glue
+  - name: "superglue"
+    github_org: superglue-ai
+    yc_slug: superglue
+    npm_org: superglue              # verify: https://www.npmjs.com/~superglue
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://superglue.ai/
+
+  # Reasoning Fine-Tuning
+  - name: "TrainLoop"
+    github_org: TrainLoop
+    yc_slug: trainloop
+    employee_estimate: 5
+    industry: ai_infra
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: http://trainloop.ai
+
+  # Claude Code plugin that reduces token consumption and cost by 50%
+  - name: "Woz"
+    github_org: WithWoz
+    yc_slug: woz
+    employee_estimate: 5
+    industry: developer_tools
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.wozcode.com/
+
+  # The OS for hospital workforce management
+  - name: "YouShift"
+    github_org: youshift
+    yc_slug: youshift
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.you-shift.com/
+
+  # High accuracy search API over unstructured data.
+  - name: "ZeroEntropy"
+    github_org: zeroentropy-ai
+    yc_slug: zeroentropy
+    npm_org: zeroentropy              # verify: https://www.npmjs.com/~zeroentropy
+    employee_estimate: 5
+    industry: ai_native
+    ai_native: true
+    funding_stage: seed
+    recent_series_bc: false
+    plg_signal: true
+    website: https://www.zeroentropy.dev

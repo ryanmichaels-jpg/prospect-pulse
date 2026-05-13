@@ -132,6 +132,7 @@ def score(
     breakdown_v2 = {k: _strong(v) for k, v in breakdown.items()}
     breakdown_v2["ts_js_dominance"] = _score_ts_js_dominance(github_data)
     breakdown_v2["npm_org"] = _score_npm_org(npm_data)
+    breakdown_v2["jvm_disqualifier"] = _score_jvm_dominance(github_data, careers_data, funding_data)
 
     # ── Totals and tier (over merged breakdown) ────────────────────────
     total = sum(r.points for r in breakdown_v2.values())
@@ -249,6 +250,79 @@ def _score_npm_org(npm_data: dict) -> SignalResult:
     return SignalResult(
         points=cfg.NPM_ORG_WEAK,
         level="weak",
+        evidence=evidence,
+    )
+
+
+def _score_jvm_dominance(
+    github_data: dict, careers_data: dict, funding_data: dict
+) -> SignalResult:
+    """Score the JVM-backend disqualifier (Counter-Bet 1) with a -3/-6/-10 ladder.
+
+    Baseline (weak, -3):
+        Java, Kotlin, or Scala appears in the top 3 active languages by repo count.
+        This alone is a flag, not a kill — Kotlin modular monoliths, Scala data
+        platforms, and Android-heavy orgs all show up the same way at the language
+        level but have meaningfully different multi-file blast radii.
+
+    Strong (-6):
+        Baseline + service-architecture corroboration: at least one of
+        - repo names/descriptions reference gRPC/Protobuf/service-mesh tooling
+        - careers JDs mention "service ownership" / "on-call per service" / Istio /
+          Linkerd / Consul / Envoy / gRPC / Protobuf
+        The service-arch evidence confirms a microservice-shape (small blast radius)
+        rather than a modular monolith.
+
+    Full (-10):
+        Strong + small total engineering headcount (employee_estimate < threshold).
+        The deal-economics carve-out: large enterprise JVM shops still warrant
+        outreach because absolute deal size can offset the lower per-developer
+        Cursor lift. Below the threshold, that offset disappears.
+
+    Per BETS.md Counter-Bet 1. The penalty is sized to "raise a flag," not to
+    auto-disqualify — full -10 is reserved for genuine small JVM microservice
+    shops, which are rare.
+    """
+    if not github_data.get("jvm_dominant_top3", False):
+        return SignalResult(points=0, level="none", evidence=[])
+
+    jvm_langs = github_data.get("jvm_languages_in_top3", [])
+    evidence = [f"JVM in top 3 active langs: {', '.join(jvm_langs)}"]
+
+    # Service-architecture corroboration: repo refs + careers JD refs.
+    repo_evidence = github_data.get("service_arch_repo_evidence", [])
+    careers_matches = careers_data.get("matched_service_arch_keywords", [])
+
+    service_arch_evidence = []
+    if repo_evidence:
+        service_arch_evidence.append(f"repo refs: {repo_evidence[0]}")
+    if careers_matches:
+        service_arch_evidence.append(f"JD refs: {', '.join(careers_matches[:2])}")
+
+    if not service_arch_evidence:
+        # Weak fire only — language-level JVM signal without architectural
+        # corroboration is architecturally neutral per the tightened bet.
+        return SignalResult(
+            points=cfg.JVM_DOMINANCE_WEAK,
+            level="weak",
+            evidence=evidence,
+        )
+
+    evidence.extend(service_arch_evidence)
+
+    # Strong or full depends on whether the deal-economics carve-out also fails.
+    emp_count = funding_data.get("employee_estimate", 0)
+    if emp_count and emp_count < cfg.JVM_SMALL_TEAM_THRESHOLD:
+        evidence.append(f"small team ({emp_count} employees) — no deal-size offset")
+        return SignalResult(
+            points=cfg.JVM_DOMINANCE_FULL,
+            level="full",
+            evidence=evidence,
+        )
+
+    return SignalResult(
+        points=cfg.JVM_DOMINANCE_STRONG,
+        level="strong",
         evidence=evidence,
     )
 

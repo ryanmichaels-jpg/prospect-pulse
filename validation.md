@@ -33,13 +33,14 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 10
 - npm_org: 5
+- jvm_disqualifier: 0
 
 ---
 
 ## Sentry — Tier 1 (score: 110)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 50 SDK/tooling-pattern repos, 3 migration-pattern repos (action-migrations: 'migration', django-pg-zero-downtime-migrations: 'migration'), ~101.4 commits/week across top repos, careers page mentions developer experience, infrastructure engineer, internal tools, 31 open eng roles, 31% repos active in last 90d, ~350 employees, developer_tools vertical; v2 signals — weak ts_js_dominance [top 3 active langs: TypeScript (83), Python (66), Rust (33)]; strong npm_org [@sentry: 83 packages · cross-ref: @sentry/browser depends on @sentry/core].
+**Our rationale:** Score driven by: 50 SDK/tooling-pattern repos, 3 migration-pattern repos (action-migrations: 'migration', django-pg-zero-downtime-migrations: 'migration'), ~101.3 commits/week across top repos, careers page mentions developer experience, infrastructure engineer, internal tools, 31 open eng roles, 31% repos active in last 90d, ~350 employees, developer_tools vertical; v2 signals — weak ts_js_dominance [top 3 active langs: TypeScript (83), Python (66), Rust (33)]; strong npm_org [@sentry: 83 packages · cross-ref: @sentry/browser depends on @sentry/core].
 
 **Customer said:** > Watching a dozen agent branches merge every day has become normal, and that freed-up velocity shows up everywhere from release cadence to bug-backlog burn-down. Cursor isn't a convenience add-on; it's a scale-multiplier for the whole org.
 — *Cody De Arkland, Senior Director, Sentry*
@@ -62,6 +63,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 5
 - npm_org: 5
+- jvm_disqualifier: 0
 
 ---
 
@@ -91,6 +93,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 5
 - npm_org: 5
+- jvm_disqualifier: 0
 
 ---
 
@@ -120,6 +123,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 0
 - npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 
@@ -149,64 +153,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 5
 - npm_org: 5
-
----
-
-## Sierra — Tier 2 (score: 70)
-
-**Expected:** Tier 1 or 2
-**Our rationale:** Score driven by: careers page mentions developer experience, infrastructure engineer, internal tooling, 49 open eng roles, series_b, AI-native company, ~100 employees, ai_native vertical.
-
-**Customer said:** > I'm really a big fan of Cursor. I've enjoyed taking something I love and has been my life's passion and seeing how this AI tool transforms how I create software.
-— *Bret Taylor, Co-Founder & CEO, Sierra*
-
-**Score breakdown:**
-
-- repo_count: 0
-- tooling_signal: 0
-- migration_signal: 0
-- contributor_count: 0
-- recency: 0
-- repo_age: 0
-- commit_velocity: 0
-- careers_keywords: 10
-- eng_hiring_velocity: 10
-- funding_recency: 10
-- plg_signal: 5
-- ai_native: 15
-- engineering_scale: 10
-- industry_complexity: 10
-- ts_js_dominance: 0
-- npm_org: 0
-
----
-
-## Decagon — Tier 2 (score: 70)
-
-**Expected:** Tier 1 or 2
-**Our rationale:** Score driven by: careers page mentions developer experience, devex, infrastructure engineer, 46 open eng roles, series_d, AI-native company, ~150 employees, ai_native vertical.
-
-**Customer said:** > Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build.
-— *Ashwin Sreenivas, Co-Founder, Decagon*
-
-**Score breakdown:**
-
-- repo_count: 0
-- tooling_signal: 0
-- migration_signal: 0
-- contributor_count: 0
-- recency: 0
-- repo_age: 0
-- commit_velocity: 0
-- careers_keywords: 10
-- eng_hiring_velocity: 10
-- funding_recency: 10
-- plg_signal: 5
-- ai_native: 15
-- engineering_scale: 10
-- industry_complexity: 10
-- ts_js_dominance: 0
-- npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 
@@ -236,6 +183,67 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 10
 - npm_org: 5
+- jvm_disqualifier: 0
+
+---
+
+## Sierra — Tier 2 (score: 60)
+
+**Expected:** Tier 1 or 2
+**Our rationale:** Score driven by: careers page mentions developer experience, infrastructure engineer, internal tooling, 49 open eng roles, series_b, AI-native company, ~100 employees, ai_native vertical.
+
+**Customer said:** > I'm really a big fan of Cursor. I've enjoyed taking something I love and has been my life's passion and seeing how this AI tool transforms how I create software.
+— *Bret Taylor, Co-Founder & CEO, Sierra*
+
+**Score breakdown:**
+
+- repo_count: 0
+- tooling_signal: 0
+- migration_signal: 0
+- contributor_count: 0
+- recency: 0
+- repo_age: 0
+- commit_velocity: 0
+- careers_keywords: 10
+- eng_hiring_velocity: 10
+- funding_recency: 10
+- plg_signal: 5
+- ai_native: 5
+- engineering_scale: 10
+- industry_complexity: 10
+- ts_js_dominance: 0
+- npm_org: 0
+- jvm_disqualifier: 0
+
+---
+
+## Decagon — Tier 2 (score: 60)
+
+**Expected:** Tier 1 or 2
+**Our rationale:** Score driven by: careers page mentions developer experience, devex, infrastructure engineer, 46 open eng roles, series_d, AI-native company, ~150 employees, ai_native vertical.
+
+**Customer said:** > Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build.
+— *Ashwin Sreenivas, Co-Founder, Decagon*
+
+**Score breakdown:**
+
+- repo_count: 0
+- tooling_signal: 0
+- migration_signal: 0
+- contributor_count: 0
+- recency: 0
+- repo_age: 0
+- commit_velocity: 0
+- careers_keywords: 10
+- eng_hiring_velocity: 10
+- funding_recency: 10
+- plg_signal: 5
+- ai_native: 5
+- engineering_scale: 10
+- industry_complexity: 10
+- ts_js_dominance: 0
+- npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 
@@ -265,6 +273,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 5
 - npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 
@@ -294,6 +303,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 5
 - ts_js_dominance: 0
 - npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 
@@ -323,6 +333,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - industry_complexity: 10
 - ts_js_dominance: 0
 - npm_org: 0
+- jvm_disqualifier: 0
 
 ---
 

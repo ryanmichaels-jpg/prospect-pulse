@@ -9,7 +9,7 @@ Priority order:
      return the first one with real data.
 """
 import requests
-from config import CAREERS_KEYWORDS
+from config import CAREERS_KEYWORDS, SERVICE_ARCHITECTURE_KEYWORDS
 
 
 GREENHOUSE_URL = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true"
@@ -65,6 +65,7 @@ def scan_ashby(org_slug: str) -> dict:
 def _analyze_jobs(jobs, source: str) -> dict:
     eng_roles = 0
     keyword_hits = set()
+    service_arch_hits = set()
     total_text = ""
 
     for job in jobs:
@@ -82,11 +83,21 @@ def _analyze_jobs(jobs, source: str) -> dict:
         if kw.lower() in total_text:
             keyword_hits.add(kw)
 
+    # Separate scan: service-architecture corroboration for JVM disqualifier
+    # (Counter-Bet 1). Tracked apart from platform-engineering keywords because
+    # this scores into a different signal (negative) and is not a "more is better"
+    # count — a single hit is enough to escalate JVM dominance to strong.
+    for kw in SERVICE_ARCHITECTURE_KEYWORDS:
+        if kw.lower() in total_text:
+            service_arch_hits.add(kw)
+
     return {
         "source": source,
         "open_engineering_roles": eng_roles,
         "platform_keyword_matches": len(keyword_hits),
         "matched_keywords": sorted(keyword_hits),
+        "service_arch_keyword_matches": len(service_arch_hits),
+        "matched_service_arch_keywords": sorted(service_arch_hits),
     }
 
 

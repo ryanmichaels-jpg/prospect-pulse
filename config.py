@@ -35,6 +35,34 @@ TS_JS_DOMINANCE_STRONG = 10
 NPM_ORG_WEAK = 2
 NPM_ORG_STRONG = 5
 
+# v2 disqualifier (Counter-Bet 1): JVM-backend dominance.
+# Per BETS.md Counter-Bet 1 and STACK_FIT_RUBRIC.md Problem 3:
+#   weak   (-3) = Java, Kotlin, or Scala in top 3 active languages by repo count
+#   strong (-6) = weak + service-architecture corroboration: gRPC/Protobuf/service-mesh
+#                 refs in repos, or JDs mentioning "service ownership" / "on-call per
+#                 service" / Istio / Linkerd / Consul
+#   full  (-10) = strong + small total engineering headcount (< JVM_SMALL_TEAM_THRESHOLD),
+#                 because deal-size economics no longer offset the lower per-developer lift
+#
+# JVM dominance alone is a flag to investigate, not kill — Kotlin modular monoliths,
+# Scala data platforms, and Android-heavy orgs all show up the same at the language
+# level but have meaningfully different multi-file blast radii.
+JVM_LANGUAGES = {"Java", "Kotlin", "Scala"}
+JVM_DOMINANCE_WEAK = -3
+JVM_DOMINANCE_STRONG = -6
+JVM_DOMINANCE_FULL = -10
+JVM_SMALL_TEAM_THRESHOLD = 100  # below this, no deal-size offset to JVM-shape penalty
+
+# Service-architecture corroboration keywords (used by both github_scan.py and
+# careers_scan.py to escalate JVM dominance from weak → strong).
+SERVICE_ARCHITECTURE_KEYWORDS = [
+    "service ownership", "on-call per service", "on call per service",
+    "service mesh", "service-mesh",
+    "istio", "linkerd", "consul",
+    "grpc", "protobuf",
+    "envoy",
+]
+
 # Tooling repo name patterns
 TOOLING_PATTERNS = ["sdk", "cli", "tools", "client", "infra", "lib", "kit"]
 TOOLING_PER_HIT = 3
@@ -81,8 +109,12 @@ FUNDING_RECENT_PTS = 10
 # PLG signal
 PLG_SIGNAL_PTS = 5
 
-# Contextual signals (for stealth/private-code companies)
-AI_NATIVE_PTS = 15
+# Contextual signal: AI-native flag. v2 reweight 15 → 5.
+# Per BETS.md Bet 5 and STACK_FIT_RUBRIC.md Problem 1: the AI-native flag is v1's
+# largest individual weight AND its shortest-lived signal (by Q3 2026 every B2B
+# company claims AI-native). v2 keeps it as a tiebreaker — the freed 10 points
+# fund the new stack-shape signals.
+AI_NATIVE_PTS = 5
 
 # Engineering scale — flat above 50, per data-driven analysis
 EMPLOYEE_SCALE_BUCKETS = [(50, 0), (99999, 10)]

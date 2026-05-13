@@ -4,7 +4,7 @@ import os
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from github import Github, Auth, GithubException
-from config import TOOLING_PATTERNS, MIGRATION_KEYWORDS
+from config import TOOLING_PATTERNS, MIGRATION_KEYWORDS, JVM_LANGUAGES, SERVICE_ARCHITECTURE_KEYWORDS
 
 # Server-side frameworks that, when found in package.json, corroborate the
 # "full-stack web development" inference for TS/JS-dominant orgs.
@@ -98,6 +98,9 @@ def scan_org(org_name: str, token: str = None) -> dict:
     # vendored code, abandoned repos, and unmaintained forks.
     active_language_counts = Counter()
     active_repos = []
+    # Service-architecture references found in repo names/descriptions — corroboration
+    # input for the JVM disqualifier (Counter-Bet 1).
+    service_arch_repo_evidence = []
 
     # Top 5 repos by stars for deep scans (contributors + commit velocity)
     repos_sorted = sorted(repos, key=lambda r: r.stargazers_count, reverse=True)
@@ -147,6 +150,14 @@ def scan_org(org_name: str, token: str = None) -> dict:
             if repo.language:
                 active_language_counts[repo.language] += 1
 
+            # Service-architecture corroboration for JVM disqualifier (Counter-Bet 1).
+            # Look for gRPC/Protobuf/service-mesh references in repo name or description.
+            for kw in SERVICE_ARCHITECTURE_KEYWORDS:
+                if kw in text:
+                    if len(service_arch_repo_evidence) < 3:
+                        service_arch_repo_evidence.append(f"{repo.name}: '{kw}'")
+                    break  # one match per repo is enough
+
     # Contributors from top-5 repos
     for repo in deep_scan:
         try:
@@ -175,6 +186,11 @@ def scan_org(org_name: str, token: str = None) -> dict:
     # Per BETS.md Bet 2 strong-corroboration: TS outranking JS suggests deliberate adoption.
     ts_outranks_js = active_language_counts.get("TypeScript", 0) > active_language_counts.get("JavaScript", 0)
 
+    # Per BETS.md Counter-Bet 1: JVM language(s) in the top 3 active langs flag the
+    # JVM disqualifier at baseline. Corroboration (service-arch refs) escalates.
+    jvm_in_top_3_list = sorted(top_3_langs & JVM_LANGUAGES)
+    jvm_dominant_top3 = bool(jvm_in_top_3_list)
+
     # Server-framework corroboration via package.json scan on top 5 JS/TS active repos.
     server_framework_evidence = _check_server_frameworks(active_repos)
 
@@ -196,6 +212,10 @@ def scan_org(org_name: str, token: str = None) -> dict:
         "ts_js_dominant_top3": ts_js_dominant_top3,
         "ts_outranks_js": ts_outranks_js,
         "server_framework_evidence": server_framework_evidence,
+        # JVM disqualifier inputs (Counter-Bet 1)
+        "jvm_dominant_top3": jvm_dominant_top3,
+        "jvm_languages_in_top3": jvm_in_top_3_list,
+        "service_arch_repo_evidence": service_arch_repo_evidence,
     }
 
 

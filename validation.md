@@ -1,4 +1,4 @@
-# Validation Report — 2026-05-11
+# Validation Report — 2026-05-13
 
 Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Pass criteria:** all commercial-segment customers (0-1,000 emp) score Tier 1 or 2; all enterprise benchmarks score Tier 1.
@@ -10,7 +10,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 ## Sentry — Tier 1 (score: 110)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 50 SDK/tooling-pattern repos, 3 migration-pattern repos (action-migrations: 'migration', django-pg-zero-downtime-migrations: 'migration'), 35 languages, ~101.3 commits/week across top repos, careers page mentions developer experience, infrastructure engineer, internal tools, 31 open eng roles, 32% repos active in last 90d, ~350 employees, developer_tools vertical.
+**Our rationale:** Score driven by: 50 SDK/tooling-pattern repos, 3 migration-pattern repos (action-migrations: 'migration', django-pg-zero-downtime-migrations: 'migration'), 35 languages, ~101.3 commits/week across top repos, careers page mentions developer experience, infrastructure engineer, internal tools, 31 open eng roles, 31% repos active in last 90d, ~350 employees, developer_tools vertical.
 
 **Customer said:** > Watching a dozen agent branches merge every day has become normal, and that freed-up velocity shows up everywhere from release cadence to bug-backlog burn-down. Cursor isn't a convenience add-on; it's a scale-multiplier for the whole org.
 — *Cody De Arkland, Senior Director, Sentry*
@@ -38,7 +38,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 ## Datadog — Tier 1 (score: 110)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 85 SDK/tooling-pattern repos, 12 migration-pattern repos (python-github3: 'v3', rrweb-snapshot: 'rebuild'), 43 languages, ~41.6 commits/week across top repos, careers page mentions developer experience, internal tooling, internal tools, 118 open eng roles, 43% repos active in last 90d, ~7500 employees, developer_tools vertical.
+**Our rationale:** Score driven by: 85 SDK/tooling-pattern repos, 12 migration-pattern repos (python-github3: 'v3', rrweb-snapshot: 'rebuild'), 43 languages, ~41.7 commits/week across top repos, careers page mentions developer experience, internal tooling, internal tools, 120 open eng roles, 43% repos active in last 90d, ~7500 employees, developer_tools vertical.
 
 **Customer said:** > Coding agents like Cursor have become the killer app for AI. Not only do coding agents increase the speed at which code is created, they also improve code quality.
 — *Alexis Lê-Quôc, CTO & Co-Founder, Datadog*
@@ -66,7 +66,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 ## Stripe — Tier 1 (score: 99)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 10 SDK/tooling-pattern repos, 2 migration-pattern repos (pg-schema-diff: 'migration', open-banking-v2-docs: 'v2'), 17 languages, ~6.5 commits/week across top repos, careers page mentions developer experience, devex, infrastructure engineer, 111 open eng roles, 62% repos active in last 90d, ~7000 employees, fintech vertical.
+**Our rationale:** Score driven by: 11 SDK/tooling-pattern repos, 2 migration-pattern repos (pg-schema-diff: 'migration', open-banking-v2-docs: 'v2'), 17 languages, ~6.4 commits/week across top repos, careers page mentions developer experience, devex, infrastructure engineer, 109 open eng roles, 62% repos active in last 90d, ~7000 employees, fintech vertical.
 
 **Customer said:** > Cursor quickly grew from hundreds to thousands of extremely enthusiastic Stripe employees. We spend more on R&D and software creation than any other undertaking, and there's significant economic outcomes when making that process more efficient and productive.
 — *Patrick Collison, Co-Founder & CEO, Stripe*
@@ -94,7 +94,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 ## Brex — Tier 1 (score: 87)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 6 SDK/tooling-pattern repos, 1 migration-pattern repos (grpc-java: 'migrating'), 11 languages, careers page mentions infrastructure engineer, internal tooling, internal tools, 53 open eng roles, ~1000 employees, fintech vertical.
+**Our rationale:** Score driven by: 6 SDK/tooling-pattern repos, 1 migration-pattern repos (grpc-java: 'migrating'), 11 languages, careers page mentions infrastructure engineer, internal tooling, internal tools, 54 open eng roles, ~1000 employees, fintech vertical.
 
 **Customer said:** > More than 70% of our engineers now use Cursor, and we've seen meaningful gains in day-to-day development, faster execution on large-scale migrations, increased rate of debugging, and even faster onboarding.
 — *James Reggio, CTO, Brex*
@@ -178,7 +178,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 ## Decagon — Tier 2 (score: 70)
 
 **Expected:** Tier 1 or 2
-**Our rationale:** Score driven by: careers page mentions developer experience, devex, infrastructure engineer, 43 open eng roles, series_d, AI-native company, ~150 employees, ai_native vertical.
+**Our rationale:** Score driven by: careers page mentions developer experience, devex, infrastructure engineer, 46 open eng roles, series_d, AI-native company, ~150 employees, ai_native vertical.
 
 **Customer said:** > Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build.
 — *Ashwin Sreenivas, Co-Founder, Decagon*
@@ -203,10 +203,10 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 
 ---
 
-## Money Forward — Tier 2 (score: 60)
+## Money Forward — Tier 2 (score: 65)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 3 SDK/tooling-pattern repos, 11 languages, ~1500 employees, fintech vertical.
+**Our rationale:** Score driven by: 3 SDK/tooling-pattern repos, 1 migration-pattern repos (omniauth-azure-activedirectory-v2: 'v2'), 11 languages, ~1500 employees, fintech vertical.
 
 **Customer said:** > Money Forward maintains complex, interconnected production systems. Cursor's context retrieval performed reliably against these codebases, which was critical for non-engineering teams interacting with production code for the first time.
 — *Aaron Li, Staff Engineer, Money Forward (full case study at cursor.com/blog/money-forward)*
@@ -216,7 +216,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 - repo_count: 7
 - language_diversity: 10
 - tooling_signal: 9
-- migration_signal: 0
+- migration_signal: 5
 - contributor_count: 4
 - recency: 0
 - repo_age: 5

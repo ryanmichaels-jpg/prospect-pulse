@@ -31,7 +31,12 @@ def write_markdown(scores: list, out_path: Path):
 
 
 def write_csv(scores: list, out_path: Path):
-    """Write a CSV with full breakdown — for CRM/spreadsheet import."""
+    """Write a CSV with full breakdown — for CRM/spreadsheet import.
+
+    In v2, breakdown values are SignalResult dataclasses; we extract `.points` for the CSV
+    columns so the file remains spreadsheet-friendly. Evidence fragments are not yet exported
+    here — that's a v3 feature (per-signal evidence columns or a JSON sidecar).
+    """
     scores_sorted = sorted(scores, key=lambda s: s.total, reverse=True)
     fieldnames = ["company", "tier", "total"] + list(scores_sorted[0].breakdown.keys()) + ["rationale"]
 
@@ -40,7 +45,8 @@ def write_csv(scores: list, out_path: Path):
         w = csv.DictWriter(f, fieldnames=fieldnames)
         w.writeheader()
         for s in scores_sorted:
-            row = {"company": s.name, "tier": s.tier, "total": s.total, **s.breakdown,
+            points_only = {k: v.points for k, v in s.breakdown.items()}
+            row = {"company": s.name, "tier": s.tier, "total": s.total, **points_only,
                    "rationale": s.rationale}
             w.writerow(row)
     print(f"Wrote CSV: {out_path}")
@@ -79,7 +85,7 @@ def write_validation_markdown(scores: list, quotes: dict, out_path: Path):
             "",
         ])
         for k, v in s.breakdown.items():
-            lines.append(f"- {k}: {v}")
+            lines.append(f"- {k}: {v.points}")
         lines.extend(["", "---", ""])
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

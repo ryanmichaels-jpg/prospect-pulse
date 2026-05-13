@@ -1,14 +1,48 @@
 """Apply weighted scoring model to GitHub + careers + funding signals."""
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, List
 import config as cfg
+
+
+@dataclass(frozen=True)
+class SignalResult:
+    """Result of one signal extraction under the v2 corroboration model.
+
+    points:   scalar weight applied to the total (positive for bets, negative for disqualifiers)
+    level:    "none" | "weak" | "strong" — how much corroboration supported the signal
+    evidence: short fragments (package names, JD sentences, language stats, etc.) that fired
+              the signal. Renders into the per-account rationale in the markdown digest.
+
+    v1-style flat-bucket signals (the kept-from-v1 signals) currently use the `_strong` helper
+    below: they fire fully or not at all, with no evidence fragments. The v2 corroboration-gated
+    signals (NPM org, TS/JS dominance, bundle composition, JVM/infra disqualifiers) populate
+    `evidence` with real fragments and use `level` to express weak vs. strong corroboration.
+
+    See BETS.md for the corroboration spec per signal.
+    """
+    points: int
+    level: str = "none"
+    evidence: List[str] = field(default_factory=list)
+
+
+def _strong(points: int) -> SignalResult:
+    """Wrap a v1-style flat-bucket integer score as a SignalResult.
+
+    Treats any non-zero points as a 'strong' fire (the v1 bucket either hit or it didn't).
+    Evidence list stays empty — v1 signals don't carry per-account fragments yet.
+    """
+    return SignalResult(
+        points=points,
+        level="strong" if points != 0 else "none",
+        evidence=[],
+    )
 
 
 @dataclass
 class CompanyScore:
     name: str
     total: int
-    breakdown: Dict[str, int]
+    breakdown: Dict[str, SignalResult]
     rationale: str
     tier: str
     raw: dict = field(default_factory=dict)
@@ -80,14 +114,22 @@ def score(github_data: dict, careers_data: dict, funding_data: dict) -> CompanyS
     breakdown["industry_complexity"] = cfg.COMPLEX_INDUSTRIES.get(industry, 0)
 
     # ── Totals ─────────────────────────────────────────────────────────
+    # breakdown is still Dict[str, int] at this point — totals and rationale
+    # both work over the raw int values exactly as in v1.
     total = sum(breakdown.values())
     tier = _tier_for(total)
     rationale = _build_rationale(breakdown, github_data, careers_data, funding_data)
 
+    # Wrap v1 flat-bucket scores as SignalResult for the v2 evidence-aware output.
+    # Until corroboration-gated signals (Phase 3) start populating evidence, every
+    # signal renders as "strong" with no evidence fragments — by design, so the
+    # validation re-run produces byte-identical scores to v1.
+    breakdown_v2 = {k: _strong(v) for k, v in breakdown.items()}
+
     return CompanyScore(
         name=github_data.get("name", "unknown"),
         total=total,
-        breakdown=breakdown,
+        breakdown=breakdown_v2,
         rationale=rationale,
         tier=tier,
         raw={"github": github_data, "careers": careers_data, "funding": funding_data},

@@ -52,6 +52,11 @@ def main():
             "ai_native": c.get("ai_native", False),
             "employee_estimate": c.get("employee_estimate", 0),
             "industry": c.get("industry", ""),
+            # Manual override flag for the public-underestimates-internal route.
+            # Set in seeds.yml on companies where Cursor has a published customer
+            # quote but the public footprint is misleadingly thin (Brex, Money
+            # Forward, Rippling, OnePay). See routing.PUBLIC_UNDERESTIMATES_INTERNAL.
+            "public_underestimates_internal": c.get("public_underestimates_internal", False),
         }
 
         s = score(github_data, careers_data, funding_data, npm_data)

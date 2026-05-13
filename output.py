@@ -5,6 +5,21 @@ from pathlib import Path
 from scorer import CompanyScore
 
 
+def _format_route(score: CompanyScore) -> str:
+    """Render a CompanyScore's route as a short rationale fragment.
+
+    Returns an empty string if no route is attached (shouldn't happen in normal
+    runs since determine_route always returns a route, but defensive against
+    partially-constructed CompanyScore instances).
+
+    Format: 'route: <name> — <pitch>'. The pitch is the operational instruction
+    the SDR uses; the name is the machine-readable identifier for filtering.
+    """
+    if score.route is None:
+        return ""
+    return f"route: {score.route.name} — {score.route.pitch}"
+
+
 def write_markdown(scores: list, out_path: Path):
     """Write a ranked markdown digest of all scored companies."""
     scores_sorted = sorted(scores, key=lambda s: s.total, reverse=True)
@@ -23,7 +38,11 @@ def write_markdown(scores: list, out_path: Path):
         "|---|---|---|---|---|",
     ]
     for i, s in enumerate(scores_sorted, 1):
-        lines.append(f"| {i} | **{s.name}** | {s.tier} | {s.total} | {s.rationale} |")
+        # Append the route as a final section of the rationale, using the same
+        # '; ' separator the rest of the rationale already uses between sections.
+        route_fragment = _format_route(s)
+        full_rationale = f"{s.rationale}; {route_fragment}" if route_fragment else s.rationale
+        lines.append(f"| {i} | **{s.name}** | {s.tier} | {s.total} | {full_rationale} |")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(lines) + "\n")
@@ -38,7 +57,13 @@ def write_csv(scores: list, out_path: Path):
     here — that's a v3 feature (per-signal evidence columns or a JSON sidecar).
     """
     scores_sorted = sorted(scores, key=lambda s: s.total, reverse=True)
-    fieldnames = ["company", "tier", "total"] + list(scores_sorted[0].breakdown.keys()) + ["rationale"]
+    # route column carries the machine-readable route name (snake_case) for CRM
+    # filterability; the pitch text lives in the rationale column.
+    fieldnames = (
+        ["company", "tier", "total"]
+        + list(scores_sorted[0].breakdown.keys())
+        + ["route", "rationale"]
+    )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "w", newline="") as f:
@@ -46,8 +71,15 @@ def write_csv(scores: list, out_path: Path):
         w.writeheader()
         for s in scores_sorted:
             points_only = {k: v.points for k, v in s.breakdown.items()}
-            row = {"company": s.name, "tier": s.tier, "total": s.total, **points_only,
-                   "rationale": s.rationale}
+            route_name = s.route.name if s.route is not None else ""
+            row = {
+                "company": s.name,
+                "tier": s.tier,
+                "total": s.total,
+                **points_only,
+                "route": route_name,
+                "rationale": s.rationale,
+            }
             w.writerow(row)
     print(f"Wrote CSV: {out_path}")
 
@@ -72,6 +104,8 @@ def write_validation_markdown(scores: list, quotes: dict, out_path: Path):
 
     for s in scores_sorted:
         q = quotes.get(s.name, {})
+        route_label = s.route.label if s.route is not None else "—"
+        route_name = s.route.name if s.route is not None else ""
         lines.extend([
             f"## {s.name} — {s.tier} (score: {s.total})",
             "",
@@ -80,6 +114,8 @@ def write_validation_markdown(scores: list, quotes: dict, out_path: Path):
             "",
             f"**Customer said:** > {q.get('quote', '[no quote]')}",
             f"— *{q.get('source', '')}*",
+            "",
+            f"**Route:** `{route_name}` — {route_label}",
             "",
             "**Score breakdown:**",
             "",

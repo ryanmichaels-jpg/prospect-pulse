@@ -3,17 +3,19 @@
 Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Pass criteria:** all commercial-segment customers (0-1,000 emp) score Tier 1 or 2; all enterprise benchmarks score Tier 1.
 
-**Pass rate (Tier 1 or 2):** 8/11
+**Pass rate (Tier 1 or 2):** 7/11
 
 ---
 
 ## Datadog — Tier 1 (score: 115)
 
 **Expected:** Tier 1
-**Our rationale:** Score driven by: 85 SDK/tooling-pattern repos, 12 migration-pattern repos (python-github3: 'v3', rrweb-snapshot: 'rebuild'), ~41.7 commits/week across top repos, careers page mentions developer experience, internal tooling, internal tools, 120 open eng roles, 43% repos active in last 90d, ~7500 employees, developer_tools vertical; v2 signals — strong ts_js_dominance [top 3 active langs: Go (58), Python (57), TypeScript (32) · dd-trace-js: Express in package.json · browser-sdk: Express in package.json]; strong npm_org [@datadog: 78 packages · cross-ref: @datadog/datadog-ci depends on @datadog/datadog-ci-base].
+**Our rationale:** Score driven by: 85 SDK/tooling-pattern repos, 12 migration-pattern repos (python-github3: 'v3', rrweb-snapshot: 'rebuild'), ~41.7 commits/week across top repos, careers page mentions developer experience, internal tooling, internal tools, 120 open eng roles, 43% repos active in last 90d, ~7500 employees, developer_tools vertical; v2 signals — strong ts_js_dominance [top 3 active langs: Go (58), Python (57), TypeScript (32) · dd-trace-js: Express in package.json · browser-sdk: Express in package.json]; strong npm_org [@datadog: 77 packages · cross-ref: @datadog/datadog-ci depends on @datadog/datadog-ci-base].
 
 **Customer said:** > Coding agents like Cursor have become the killer app for AI. Not only do coding agents increase the speed at which code is created, they also improve code quality.
 — *Alexis Lê-Quôc, CTO & Co-Founder, Datadog*
+
+**Route:** `standard_outbound` — Standard outbound
 
 **Score breakdown:**
 
@@ -45,6 +47,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > Watching a dozen agent branches merge every day has become normal, and that freed-up velocity shows up everywhere from release cadence to bug-backlog burn-down. Cursor isn't a convenience add-on; it's a scale-multiplier for the whole org.
 — *Cody De Arkland, Senior Director, Sentry*
 
+**Route:** `standard_outbound` — Standard outbound
+
 **Score breakdown:**
 
 - repo_count: 10
@@ -74,6 +78,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 
 **Customer said:** > Cursor quickly grew from hundreds to thousands of extremely enthusiastic Stripe employees. We spend more on R&D and software creation than any other undertaking, and there's significant economic outcomes when making that process more efficient and productive.
 — *Patrick Collison, Co-Founder & CEO, Stripe*
+
+**Route:** `standard_outbound` — Standard outbound
 
 **Score breakdown:**
 
@@ -105,6 +111,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > More than 70% of our engineers now use Cursor, and we've seen meaningful gains in day-to-day development, faster execution on large-scale migrations, increased rate of debugging, and even faster onboarding.
 — *James Reggio, CTO, Brex*
 
+**Route:** `standard_outbound` — Standard outbound
+
 **Score breakdown:**
 
 - repo_count: 7
@@ -134,6 +142,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 
 **Customer said:** > By February 2025, every Coinbase engineer had utilized Cursor, which has become the preferred IDE for most of our developers. Single engineers are now refactoring, upgrading, or building new codebases in days instead of months.
 — *Brian Armstrong, CEO, Coinbase*
+
+**Route:** `standard_outbound` — Standard outbound
 
 **Score breakdown:**
 
@@ -165,6 +175,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > Money Forward maintains complex, interconnected production systems. Cursor's context retrieval performed reliably against these codebases, which was critical for non-engineering teams interacting with production code for the first time.
 — *Aaron Li, Staff Engineer, Money Forward (full case study at cursor.com/blog/money-forward)*
 
+**Route:** `standard_outbound` — Standard outbound
+
 **Score breakdown:**
 
 - repo_count: 7
@@ -195,35 +207,7 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > I'm really a big fan of Cursor. I've enjoyed taking something I love and has been my life's passion and seeing how this AI tool transforms how I create software.
 — *Bret Taylor, Co-Founder & CEO, Sierra*
 
-**Score breakdown:**
-
-- repo_count: 0
-- tooling_signal: 0
-- migration_signal: 0
-- contributor_count: 0
-- recency: 0
-- repo_age: 0
-- commit_velocity: 0
-- careers_keywords: 10
-- eng_hiring_velocity: 10
-- funding_recency: 10
-- plg_signal: 5
-- ai_native: 5
-- engineering_scale: 10
-- industry_complexity: 10
-- ts_js_dominance: 0
-- npm_org: 0
-- jvm_disqualifier: 0
-
----
-
-## Decagon — Tier 2 (score: 60)
-
-**Expected:** Tier 1 or 2
-**Our rationale:** Score driven by: careers page mentions developer experience, devex, infrastructure engineer, 46 open eng roles, series_d, AI-native company, ~150 employees, ai_native vertical.
-
-**Customer said:** > Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build.
-— *Ashwin Sreenivas, Co-Founder, Decagon*
+**Route:** `standard_outbound` — Standard outbound
 
 **Score breakdown:**
 
@@ -255,6 +239,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > Cursor has transformed the way our engineering teams write and ship code, with adoption growing from 150 to over 500 engineers (~60% of our org!) in just a few weeks.
 — *Albert Strasheim, CTO, Rippling*
 
+**Route:** `standard_outbound` — Standard outbound
+
 **Score breakdown:**
 
 - repo_count: 4
@@ -285,6 +271,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 **Customer said:** > Across roles and levels, we're seeing an increase of over 25% in PR volume and over 100% in the average PR size. Together, that means we're shipping about 50% more code.
 — *Anton Andreev, Principal Software Engineer, Upwork*
 
+**Route:** `standard_outbound` — Standard outbound
+
 **Score breakdown:**
 
 - repo_count: 4
@@ -307,6 +295,38 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 
 ---
 
+## Decagon — Tier 3 (score: 40)
+
+**Expected:** Tier 1 or 2
+**Our rationale:** Score driven by: series_d, AI-native company, ~150 employees, ai_native vertical.
+
+**Customer said:** > Cursor is the tool that every engineer (including me) instinctively turns to when navigating complexity or hitting a wall. With 100% adoption across our engineering team, Cursor has become an essential part of how we build.
+— *Ashwin Sreenivas, Co-Founder, Decagon*
+
+**Route:** `standard_outbound` — Standard outbound
+
+**Score breakdown:**
+
+- repo_count: 0
+- tooling_signal: 0
+- migration_signal: 0
+- contributor_count: 0
+- recency: 0
+- repo_age: 0
+- commit_velocity: 0
+- careers_keywords: 0
+- eng_hiring_velocity: 0
+- funding_recency: 10
+- plg_signal: 5
+- ai_native: 5
+- engineering_scale: 10
+- industry_complexity: 10
+- ts_js_dominance: 0
+- npm_org: 0
+- jvm_disqualifier: 0
+
+---
+
 ## OnePay — Tier 4 (score: 25)
 
 **Expected:** Tier 1 or 2
@@ -314,6 +334,8 @@ Scoring model run against 11 known Cursor customers with verbatim public quotes.
 
 **Customer said:** > Cursor took the most popular IDE in the world and put it on steroids. It's exceptional at debugging issues and attributing them to precise historical code changes, has stellar writing documentation skills, and has been incredibly helpful for new joiners in helping them ramp.
 — *Moe Matar, CTO, OnePay*
+
+**Route:** `standard_outbound` — Standard outbound
 
 **Score breakdown:**
 

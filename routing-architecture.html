@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Routing pass — prospect-pulse v2 architecture</title>
+<style>
+  /* ============================================================
+     TOKENS — refined dark register.
+     ============================================================ */
+  :root {
+    --bg: #0d0d0f;
+    --bg-elev: #141417;
+    --surface: #1a1a1e;
+    --surface-2: #202024;
+    --border: #26262c;
+    --border-soft: #1d1d22;
+    --text: #f5f5f7;
+    --text-muted: #98989f;
+    --text-faint: #6b6b73;
+    --accent: #F59E0B;
+    --accent-soft: rgba(245,158,11,0.12);
+
+    --role-trigger: #60A5FA;
+    --role-tool: #FBBF24;
+    --role-processing: #34D399;
+    --role-decision: #C084FC;
+    --role-store: #818CF8;
+    --role-output: #F87171;
+
+    --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: 32px 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  header {
+    border-bottom: 1px solid var(--border-soft);
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+  }
+  header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+  header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 760px;
+  }
+
+  .diagram {
+    padding: 28px 0;
+    position: relative;
+  }
+
+  .node {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 192px;
+    max-width: 248px;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+    position: relative;
+  }
+  .node:hover {
+    transform: translateY(-2px);
+    border-color: var(--text-faint);
+  }
+  .node.dim { opacity: 0.25; }
+  .node.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .node .role {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .node .label {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .node .label.tool-name {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .node .sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .node.trigger     { border-left: 3px solid var(--role-trigger); }
+  .node.trigger .role     { color: var(--role-trigger); }
+  .node.tool        { border-left: 3px solid var(--role-tool); }
+  .node.tool .role        { color: var(--role-tool); }
+  .node.processing  { border-left: 3px solid var(--role-processing); }
+  .node.processing .role  { color: var(--role-processing); }
+  .node.decision    { border-left: 3px solid var(--role-decision); }
+  .node.decision .role    { color: var(--role-decision); }
+  .node.store       { border-left: 3px solid var(--role-store); }
+  .node.store .role       { color: var(--role-store); }
+  .node.output      { border-left: 3px solid var(--role-output); }
+  .node.output .role      { color: var(--role-output); }
+
+  /* Indicates this is a brand-new node not in the current codebase */
+  .node.new::after {
+    content: "NEW";
+    position: absolute;
+    top: -8px; right: -8px;
+    background: var(--accent);
+    color: #0d0d0f;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+
+  /* Tree layout */
+  .diagram.tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .diagram.tree .row {
+    display: flex; gap: 24px;
+    align-items: flex-start; justify-content: center;
+    flex-wrap: wrap;
+  }
+  .arrow-v {
+    width: 1.5px; height: 36px;
+    background: var(--border);
+    margin: 4px 0;
+    position: relative;
+  }
+  .arrow-v::after {
+    content: "";
+    position: absolute; bottom: -2px; left: -4px;
+    border: 5px solid transparent;
+    border-top-color: var(--border);
+  }
+  .arrow-v .lbl {
+    position: absolute; left: 12px; top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+  .arrow-v.lit { background: var(--accent); }
+  .arrow-v.lit::after { border-top-color: var(--accent); }
+  .arrow-v.lit .lbl { color: var(--accent); }
+
+  .branches {
+    display: flex; gap: 24px;
+    justify-content: center; align-items: flex-start;
+    position: relative; padding-top: 32px;
+    flex-wrap: wrap;
+  }
+  .branches::before {
+    content: "";
+    position: absolute; top: 0; left: 50%;
+    height: 28px; width: 1.5px;
+    background: var(--border);
+    transform: translateX(-50%);
+  }
+  .branch {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 0;
+  }
+  .branch-lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--role-decision);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border: 1px solid var(--role-decision);
+    border-radius: 4px;
+    background: rgba(192,132,252,0.08);
+    margin-bottom: 12px;
+    text-align: center;
+    line-height: 1.3;
+    max-width: 200px;
+  }
+
+  .legend {
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+  }
+  .legend .item {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .legend .swatch {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    background: var(--surface);
+    border-left: 3px solid;
+    border-top: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .legend .new-marker {
+    width: 14px; height: 14px;
+    background: var(--accent);
+    color: #0d0d0f;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    letter-spacing: 0.05em;
+  }
+
+  .tooltip {
+    position: fixed;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    line-height: 1.45;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 1000;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .tooltip.visible { opacity: 1; }
+
+  .note {
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .note strong { color: var(--text); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="eyebrow">prospect-pulse v2 proposal</div>
+    <h1>Routing pass — turning counter-bets into operational instructions</h1>
+    <p>Today, a counter-bet (JVM disqualifier, planned pure-infra shop, planned sub-ten team) subtracts points from a company's score and stops. The score is the SDR's prioritization input — but it doesn't say <em>how</em> to approach a flagged account. The proposed routing pass converts each counter-bet outcome into a named outbound motion: which seats to target, which to avoid, what to lead with.</p>
+  </header>
+
+  <main class="diagram tree" id="diagram">
+
+    <!-- TRIGGER -->
+    <div class="node trigger" data-id="t1" data-tip="Manual or scheduled cron invocation. Reads the company list from the active seeds file.">
+      <div class="role">Trigger</div>
+      <div class="label tool-name">python3 -u run.py</div>
+      <div class="sub">Manual or scheduled scan</div>
+    </div>
+    <div class="arrow-v" data-from="t1" data-to="s1"><span class="lbl">company entries from seeds.yml</span></div>
+
+    <!-- SCAN PIPELINE -->
+    <div class="node tool" data-id="s1" data-tip="Existing. PyGithub. Returns repos, top-3 active languages by repo count, package.json server-framework markers, contributor counts.">
+      <div class="role">Tool</div>
+      <div class="label tool-name">github_scan</div>
+      <div class="sub">Repos · top-3 active langs · package.json frameworks</div>
+    </div>
+    <div class="arrow-v" data-from="s1" data-to="s2"><span class="lbl">github_data</span></div>
+
+    <div class="node tool" data-id="s2" data-tip="Existing. NPM registry HTTP fetch. Returns org scope existence, package count, cross-reference dependencies between packages.">
+      <div class="role">Tool</div>
+      <div class="label tool-name">npm_scan</div>
+      <div class="sub">Org scope · package count · cross-references</div>
+    </div>
+    <div class="arrow-v" data-from="s2" data-to="s3"><span class="lbl">+ npm_data</span></div>
+
+    <div class="node tool" data-id="s3" data-tip="Existing. Greenhouse / Lever / Ashby JSON APIs. Returns open roles and keyword hits in JD text (platform engineer, monorepo, design system, service mesh keywords).">
+      <div class="role">Tool</div>
+      <div class="label tool-name">careers_scan</div>
+      <div class="sub">Open roles · keyword hits · service-arch refs</div>
+    </div>
+    <div class="arrow-v" data-from="s3" data-to="p1"><span class="lbl">+ careers_data</span></div>
+
+    <!-- SCORER -->
+    <div class="node processing" data-id="p1" data-tip="Existing. Computes one SignalResult per signal — each with a level (none / weak / strong / full) and an evidence-fragment list. Sum becomes the total score; total maps to a tier.">
+      <div class="role">Processing</div>
+      <div class="label">scorer.score()</div>
+      <div class="sub">Emits one SignalResult per signal · level + evidence</div>
+    </div>
+    <div class="arrow-v" data-from="p1" data-to="store1"><span class="lbl">SignalResult per signal</span></div>
+
+    <!-- DATA STORE -->
+    <div class="node store" data-id="store1" data-tip="The breakdown_v2 dict already passed around inside scorer.score(). Reused as the input to the new router — no new data needed, just a new consumer.">
+      <div class="role">Data Store</div>
+      <div class="label">breakdown_v2</div>
+      <div class="sub">Dict of fired signals · already in memory</div>
+    </div>
+    <div class="arrow-v" data-from="store1" data-to="d1"><span class="lbl">fired signals + funding_data</span></div>
+
+    <!-- DECISION -->
+    <div class="node decision new" data-id="d1" data-tip="New module: routing.py. Rule-based first-match-wins matcher. Examines which signals fired and at what level. Returns one Route. The route catalog is defined as module constants in routing.py.">
+      <div class="role">Decision</div>
+      <div class="label">routing.determine_route()</div>
+      <div class="sub">First-match-wins over the route catalog</div>
+    </div>
+
+    <!-- BRANCHES (the 5 routes) -->
+    <div class="branches">
+
+      <div class="branch">
+        <div class="branch-lbl">sub_ten_team fires</div>
+        <div class="node output new" data-id="o4" data-tip="Sub-ten team disqualifier. Not an SDR motion at all — wait for headcount or PLG-style founder outreach. Highest-priority match.">
+          <div class="role">Route</div>
+          <div class="label">individual_evaluator</div>
+          <div class="sub">Not an SDR target. PLG path or wait for headcount growth.</div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-lbl">JVM ≥ weak + NPM strong</div>
+        <div class="node output new" data-id="o2" data-tip="The Databricks / Palantir / Confluent pattern from the contrast scan. JVM backend dominance AND substantial public NPM/design-system investment. The frontend team is the right entry point.">
+          <div class="role">Route</div>
+          <div class="label">split_pitch_jvm</div>
+          <div class="sub">Lead with frontend platform team, not JVM service-ownership team. Cite NPM org evidence.</div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-lbl">pure_infra ≥ weak + TS/JS exists</div>
+        <div class="node output new" data-id="o3" data-tip="Planned per BETS Counter-Bet 2. Pure-infra culture but a non-zero frontend surface. Split-pitch: Cursor for UI engineers; acknowledge Claude Code may fit platform engineers better.">
+          <div class="role">Route</div>
+          <div class="label">split_pitch_infra</div>
+          <div class="sub">Cursor for UI engineers; acknowledge Claude Code may fit platform engineers.</div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-lbl">published_customer +<br>thin public footprint</div>
+        <div class="node output new" data-id="o5" data-tip="Manual flag in seeds.yml. The Brex, Money Forward, Rippling, OnePay pattern: a published Cursor customer whose public footprint underestimates internal TS/React work. Lead with the customer quote.">
+          <div class="role">Route</div>
+          <div class="label">public_underestimates_internal</div>
+          <div class="sub">Pursue with frontend-led pitch. Cite the customer quote when available.</div>
+        </div>
+      </div>
+
+      <div class="branch">
+        <div class="branch-lbl">default (no counter-bet)</div>
+        <div class="node output new" data-id="o1" data-tip="No counter-bet fired. Standard outbound pitch on the strongest positive signal in the per-account rationale. This is the fallback case.">
+          <div class="role">Route</div>
+          <div class="label">standard_outbound</div>
+          <div class="sub">Standard pitch on the strongest fired positive signal.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div class="note">
+    <strong>What's new vs. existing.</strong> Nodes marked <span style="color: var(--accent); font-family: var(--font-mono); font-size: 11px; font-weight: 700;">NEW</span> don't exist in the current repo. Everything else (the trigger, three scans, scorer, and breakdown_v2 dict) is shipping today. The proposal adds one module (<code style="color: var(--text); font-family: var(--font-mono); font-size: 12px;">routing.py</code>), one field on <code style="color: var(--text); font-family: var(--font-mono); font-size: 12px;">CompanyScore</code>, and one line in <code style="color: var(--text); font-family: var(--font-mono); font-size: 12px;">scorer.score()</code> that calls the router. The output formatter reads the route's pitch and renders it as a final sentence in the per-account rationale; CSV gains a <code style="color: var(--text); font-family: var(--font-mono); font-size: 12px;">route</code> column.
+  </div>
+
+  <div class="legend">
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-trigger);"></div>Trigger</div>
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-tool);"></div>Tool</div>
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-processing);"></div>Processing</div>
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-decision);"></div>Decision</div>
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-store);"></div>Data Store</div>
+    <div class="item"><div class="swatch" style="border-left-color: var(--role-output);"></div>Route Output</div>
+    <div class="item"><div class="new-marker">NEW</div>Not in repo yet</div>
+  </div>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+  const diagram = document.getElementById('diagram');
+
+  function getAllNodes() { return diagram.querySelectorAll('.node'); }
+  function getAllArrows() { return diagram.querySelectorAll('.arrow-h, .arrow-v'); }
+
+  function reset() {
+    getAllNodes().forEach(n => n.classList.remove('active', 'dim'));
+    getAllArrows().forEach(a => a.classList.remove('lit', 'dim'));
+  }
+
+  getAllNodes().forEach(n => {
+    n.addEventListener('mouseenter', () => {
+      if (n.dataset.tip) {
+        tooltip.textContent = n.dataset.tip;
+        tooltip.classList.add('visible');
+      }
+    });
+    n.addEventListener('mousemove', e => {
+      tooltip.style.left = (e.clientX + 14) + 'px';
+      tooltip.style.top = (e.clientY + 14) + 'px';
+    });
+    n.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+    n.addEventListener('click', e => {
+      e.stopPropagation();
+      const wasActive = n.classList.contains('active');
+      reset();
+      if (wasActive) return;
+
+      const id = n.dataset.id;
+      const connected = new Set([id]);
+      getAllArrows().forEach(a => {
+        if (a.dataset.from === id) connected.add(a.dataset.to);
+        if (a.dataset.to === id) connected.add(a.dataset.from);
+      });
+      getAllNodes().forEach(other => {
+        if (connected.has(other.dataset.id)) {
+          if (other === n) other.classList.add('active');
+        } else {
+          other.classList.add('dim');
+        }
+      });
+      getAllArrows().forEach(a => {
+        if (a.dataset.from === id || a.dataset.to === id) {
+          a.classList.add('lit');
+        } else {
+          a.classList.add('dim');
+        }
+      });
+      n.classList.add('active');
+    });
+  });
+
+  document.addEventListener('click', reset);
+</script>
+
+</body>
+</html>

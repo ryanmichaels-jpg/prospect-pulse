@@ -1,7 +1,8 @@
 """Apply weighted scoring model to GitHub + careers + funding signals."""
 from dataclasses import dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Optional
 import config as cfg
+from routing import Route, determine_route
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,11 @@ class CompanyScore:
     rationale: str
     tier: str
     raw: dict = field(default_factory=dict)
+    # Outbound motion attached after scoring. See routing.py — every score
+    # gets a route (default is STANDARD_OUTBOUND), so this is non-Optional in
+    # practice but typed loose to keep the dataclass safe for partially-
+    # constructed instances during testing.
+    route: Optional[Route] = None
 
 
 def _bucket_score(value: float, buckets: list) -> int:
@@ -144,6 +150,13 @@ def score(
     rationale = _build_rationale(breakdown, github_data, careers_data, funding_data)
     rationale = _append_v2_evidence(rationale, breakdown_v2)
 
+    # ── Routing ───────────────────────────────────────────────────────
+    # The router converts counter-bet outcomes into a named outbound motion
+    # (which seats to target, what to lead with). See routing.py for the
+    # route catalog and priority ordering. Every score gets a route; the
+    # default is STANDARD_OUTBOUND when no counter-bet fired.
+    route = determine_route(breakdown_v2, funding_data)
+
     return CompanyScore(
         name=github_data.get("name", "unknown"),
         total=total,
@@ -151,6 +164,7 @@ def score(
         rationale=rationale,
         tier=tier,
         raw={"github": github_data, "careers": careers_data, "funding": funding_data},
+        route=route,
     )
 
 

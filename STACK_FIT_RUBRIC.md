@@ -44,6 +44,10 @@ The cost is more code per signal and a richer scoring data structure. The benefi
 
 See [`BETS.md`](BETS.md) for the full corroboration spec per signal.
 
+### Counter-bets are also routing rules
+
+Scoring answers "how good a fit is this account?" Routing answers "how should we approach it?" These are different concerns, and v2 keeps them in separate modules. After scoring, `routing.determine_route()` (defined in `routing.py`) examines which signals fired and emits a named outbound motion — `split_pitch_jvm`, `split_pitch_infra`, `individual_evaluator`, `public_underestimates_internal`, or `standard_outbound` — each carrying a 1-2 sentence operational instruction the SDR uses as opener. A flat counter-bet penalty answers "how much worse"; a route answers "what specifically to do instead." Both attach to the per-account output. See [`BETS.md` § Routing pass](BETS.md#routing-pass) for the catalog and priority order.
+
 ## Three structural problems v2 fixes
 
 ### Problem 1 — `ai_native` is v1's largest weight and v1's shortest-lived signal

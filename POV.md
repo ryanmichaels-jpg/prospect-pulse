@@ -55,11 +55,13 @@ This is the right limit to be transparent about. The rubric scores what it can s
 
 ## What I'd build next
 
-The scan and the contrast set together are half the rubric. The other half is what an SDR does with it on Monday morning. Two priorities:
+The scan, the contrast set, and the routing pass together cover the day-of-the-rep workflow. The remaining work is closing two gaps:
 
-The first is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out (repos); this closes the loop with outside-in. The same exercise needs to happen for the other two designed-but-uncoded disqualifiers (pure-infra-shop and sub-ten-team) — each needs its own contrast set before it ships, on the same logic that produced the JVM finding above.
+The first is the bundle-composition extractor (an outstanding bet in `BETS.md`): a public HTTP fetch against each prospect's marketing site to detect `__NEXT_DATA__` / `_next/static/chunks` and corroborate the engineering org's stack with the external-facing product surface. Today the rubric only sees inside-out (repos); this closes the loop with outside-in.
 
-The second — and the one most directly tied to outbound velocity — is the rationale-to-talking-point layer. The scorer already preserves one short evidence fragment per signal that fires at "strong" (a specific repo name, a `package.json` framework, an NPM dependency edge). Today those fragments live in the digest's rationale paragraph. The next move is surfacing them as the rep's opening line in a sequence: "noticed `@replicate/types-rest-api` depends on `@replicate/types-openapi`, suggests you're investing in the package-publishing infrastructure that's where Cursor compounds — wanted to ask how the frontend team is using it today." That's the actual product: not the score, but the SDR's first sentence.
+The second is shipping the remaining two disqualifiers (pure-infra-shop and sub-ten-team) with their own contrast sets — the same exercise that produced the JVM finding above. Once those land, the routing pass auto-activates the `split_pitch_infra` and `individual_evaluator` routes that are already wired up but dormant today.
+
+The routing pass itself (`routing.py`) is the operationalization of the contrast finding above. Each fired counter-bet maps to a named outbound motion with explicit target/avoid seats and a one-paragraph pitch, so the digest doesn't just say "Databricks lost 6 points for JVM dominance" — it says "Databricks → `split_pitch_jvm` → lead with the frontend platform team, cite `@databricks/design-system` in the opener, avoid the JVM service-ownership team." That's the difference between a score and a sales motion.
 
 ---
 

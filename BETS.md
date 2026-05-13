@@ -94,6 +94,26 @@ v2 fixes this by treating each signal as a mini-investigation. The baseline inte
 
 **Open question for workshopping:** Whether the threshold should be 10 or 15, and whether the signal should soften (rather than disqualify) companies that have a strong single engineering leader endorsement (the founder-led adoption pattern).
 
+## Routing pass
+
+Counter-bets are subtractive: they push a company's score down to reflect that the standard pitch will land worse than the score-without-disqualifier would suggest. But "lower score" isn't an operational instruction. A tightened counter-bet should ideally include a *what-to-do-instead* clause — lead with the frontend team, pitch on UI iteration rather than multi-file editing, route to PLG instead of an SDR sequence. That converts the counter-bet from a filter into a routing rule, which is operationally more useful for a sales motion that has to allocate effort across a large account list.
+
+`routing.py` implements this as a separate pass after scoring. A `Route` dataclass holds: a machine-readable `name`, a human-readable `label`, a 1-2 sentence `pitch` (the operational instruction the SDR uses as opener / qualification frame), and `target_seats` / `avoid_seats` lists. `determine_route(breakdown, funding_data)` is a rule-based, first-match-wins matcher over the route catalog.
+
+### Route catalog and priority order
+
+1. **`individual_evaluator`** — sub_ten_team_disqualifier fires. Overrides everything else: a sub-10 engineer team isn't an SDR motion regardless of stack-shape. Route to PLG / founder outreach.
+2. **`public_underestimates_internal`** — manual flag `public_underestimates_internal: true` in `seeds.yml`. The explicit override for the Brex / Money Forward / Rippling / OnePay pattern: published Cursor customer with thin public footprint. Pursue with frontend-led pitch, cite the customer quote.
+3. **`split_pitch_jvm`** — jvm_disqualifier ≥ weak AND npm_org strong. The Databricks / Palantir / Confluent pattern from the JVM contrast scan. Lead with frontend platform team, not JVM service-ownership team.
+4. **`split_pitch_infra`** — pure_infra_shop_disqualifier ≥ weak AND any ts_js_dominance evidence. Cursor for UI engineers; acknowledge Claude Code may fit platform engineers better. (Dormant until pure_infra_shop disqualifier ships.)
+5. **`standard_outbound`** — default fallback when no counter-bet fired. Standard pitch on the strongest fired positive signal.
+
+The router runs after the scorer; `CompanyScore` gains a `route` field. The output formatter renders the route's pitch as a final sentence in the per-account rationale; the CSV gains a `route` column (machine-readable name) for CRM filterability.
+
+### Why per-counter-bet routes, not generic deprioritization
+
+A flat penalty answers "how much worse?" A route answers "what specifically should the rep do instead?" The second is what an SDR actually needs to plan a Monday morning. Treating the counter-bet's penalty and its operational consequence as separate concerns also means the router can encode cross-signal rules — `split_pitch_jvm` only fires when JVM disqualifier *and* NPM org strong both hold, which neither signal alone could express. That's the architectural argument for the routing pass living in its own module rather than being a property of each `SignalResult`.
+
 ## Bets carried forward from v1 (unchanged)
 
 These signals were validated by v1's 8/11 pass rate and don't need re-justification:

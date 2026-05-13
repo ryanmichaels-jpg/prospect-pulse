@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Internal planning docs — not for public repo
+HANDOFF.md
+LOOM-STORYBOARD.md
